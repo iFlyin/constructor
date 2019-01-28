@@ -1,18 +1,39 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <router-link to="/"><img alt="ИМЦ логотип" src="../assets/logo.png"></router-link>
+    <div id="nav">
+      <router-link to="/default">Документы</router-link> |
+      <router-link to="/default">Формы</router-link> |
+      <router-link to="/bl_designer">Процессы</router-link>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
+@Component({})
 export default class Home extends Vue {}
 </script>
+
+<style lang="scss" scoped>
+  .home {
+    height: 80%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+  #nav {
+  padding: 30px;
+    a {
+      font-weight: bold;
+      color: #2c3e50;
+      
+      &:hover {
+        color: #42b983;
+      }
+    }
+  }
+</style>
+
