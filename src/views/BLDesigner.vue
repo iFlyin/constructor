@@ -22,7 +22,7 @@
       <div class="flex-element flex-row">
         <div class="flex-element canvas-wrapper">
           <app-canvas :width="canvasWidth" :height="canvasHeight">
-            <layout-b-l/>
+            <layout-b-l :left="LeftWidth"/>
           </app-canvas>
         </div>
         <panel-right :width="RightWidth" @resize="RightWidth = $event"/> 
