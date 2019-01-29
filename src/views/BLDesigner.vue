@@ -20,7 +20,7 @@
     </panel-left>
     <div class="flex-element flex-column">
       <div class="flex-element flex-row">
-        <div class="flex-element canvas-wrapper">
+        <div class="flex-element">
           <app-canvas :width="canvasWidth" :height="canvasHeight">
             <layout-b-l :left="LeftWidth"/>
           </app-canvas>
@@ -56,13 +56,23 @@ export default class UMLDesigner extends Vue {
   private LeftWidth: number = 240;
   private RightWidth: number = 200;
   private FooterHeight: number = 132;
+  private windowWidth: number = window.innerWidth;
+  private windowHeight: number = window.innerHeight;
 
   private get canvasWidth(): number {
-    return window.innerWidth - this.LeftWidth - this.RightWidth;
+    return this.windowWidth - this.LeftWidth - this.RightWidth;
   }
 
   private get canvasHeight(): number {
-    return window.innerHeight - this.FooterHeight - 30;
+    return this.windowHeight - this.FooterHeight - 30;
+  }
+
+  private mounted(): void {
+    const that = this;    
+    window.addEventListener('resize', function(){
+      that.windowWidth = window.innerWidth;
+      that.windowHeight = window.innerHeight;
+    })
   }
 }
 </script>
@@ -73,11 +83,12 @@ export default class UMLDesigner extends Vue {
     flex-flow: row wrap;
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
   .flex {
     &-element {
-      flex: 1 1 auto;
+      // flex: 1 1 auto;
     }
 
     &-column {
@@ -89,10 +100,6 @@ export default class UMLDesigner extends Vue {
       display: flex;
       flex-flow: row nowrap;
     }
-  }
-
-  .canvas-wrappe {
-    overflow: hidden;
   }
 
 </style>

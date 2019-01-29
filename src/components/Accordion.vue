@@ -41,7 +41,6 @@ export default class Accordion extends Vue {
    private dragStart(e: any, item: any) {
       e.dataTransfer.setData('component', JSON.stringify(item));
    }
-
 }
 </script>
 

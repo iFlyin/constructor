@@ -1,11 +1,15 @@
 <template>
    <div 
       class="layout"
-      @dragover="$event.preventDefault()"
-      @drop="drop($event)"
+      @dragover.stop="$event.preventDefault()"
+      @drop.stop="drop($event)"
       @click="selected = 0"
       @keyup.delete="del('1')"
       tabindex="0"
+      @mousewheel="wheel($event)"
+      :style="{
+         zoom: zoom
+      }"
    >
       <div 
          class="layout-item"
@@ -20,17 +24,18 @@
          :data-id="item.id"
          @mousedown="movement($event)"
          @click.stop="select($event)"
+         @drop.stop="1"
       >
          <div class="layout-item-wrapper">
             <div class="layout-item-resizer" v-if="item.id == selected">
-               <button class="resizer-grid resizer-top-left" @mousedown.stop="resizeTopLeft($event, item.id)"></button>   
-               <button class="resizer-grid resizer-top" @mousedown.stop="resizeTop($event, item.id)"></button>   
-               <button class="resizer-grid resizer-top-right"  @mousedown.stop="resizeTopRight($event, item.id)"></button>   
-               <button class="resizer-grid resizer-left" @mousedown.stop="resizeLeft($event, item.id)"></button>   
-               <button class="resizer-grid resizer-right" @mousedown.stop="resizeRight($event, item.id)"></button>                     
-               <button class="resizer-grid resizer-bottom-left" @mousedown.stop="resizeBottomLeft($event, item.id)"></button>   
-               <button class="resizer-grid resizer-bottom" @mousedown.stop="resizeBottom($event, item.id)"></button>   
-               <button class="resizer-grid resizer-bottom-right" @mousedown.stop="resizeBottomRight($event, item.id)"></button>   
+               <button class="resizer-grid resizer-top-left" @mousedown.stop="resize($event, item.id, ['top', 'left'])"></button>   
+               <button class="resizer-grid resizer-top" @mousedown.stop="resize($event, item.id, ['top'])"></button>   
+               <button class="resizer-grid resizer-top-right"  @mousedown.stop="resize($event, item.id, ['top', 'right'])"></button>   
+               <button class="resizer-grid resizer-left" @mousedown.stop="resize($event, item.id, ['left'])"></button>   
+               <button class="resizer-grid resizer-right" @mousedown.stop="resize($event, item.id, ['right'])"></button>                     
+               <button class="resizer-grid resizer-bottom-left" @mousedown.stop="resize($event, item.id, ['bottom', 'left'])"></button>   
+               <button class="resizer-grid resizer-bottom" @mousedown.stop="resize($event, item.id, ['bottom'])"></button>   
+               <button class="resizer-grid resizer-bottom-right" @mousedown.stop="resize($event, item.id, ['bottom', 'right'])"></button>   
             </div>
             <div class="layout-item-content">
                <div class="layout-item-header">
@@ -60,6 +65,7 @@ export default class LayoutBL extends Vue {
    private id: number = 0;
    private left!: number;
    private selected: number = 0;
+   private zoom: number = 1;
    
    private drop(e: any): void {
       const scrollX = this.$el.scrollLeft;
@@ -68,9 +74,9 @@ export default class LayoutBL extends Vue {
       item.coord = new Array();
       const centerX = item.width/2;
       const centerY = item.height/2;
-      let posX = e.clientX - this.left - centerX;
+      let posX = (e.clientX - this.left) / this.zoom  - centerX;
       if (posX < 0) { posX = 0 }
-      let posY = e.clientY - 30 - centerY;
+      let posY = (e.clientY - 30) /this.zoom - centerY;
       if (posY < 0) { posY = 0 }
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
@@ -108,8 +114,10 @@ export default class LayoutBL extends Vue {
       const offsetY = e.offsetY;
       
       function move(e: MouseEvent): void {
-         x = e.clientX - that.left - offsetX + scrollX;
-         y = e.clientY - 30 - offsetY + scrollY;
+         x = (e.clientX - offsetX - that.left) / that.zoom  + scrollX;
+         if (x < 0) { x = 0; }
+         y = (e.clientY - 30 - offsetY) / that.zoom + scrollY;
+         if (y < 0) { y = 0; }
          that.list[index].coord = [x, y];
       }
 
@@ -122,161 +130,56 @@ export default class LayoutBL extends Vue {
       window.addEventListener('mouseup', clean);
    }
 
-   private resizeLeft(e: MouseEvent, id: number): void {
+   private resize(e: MouseEvent, id: number, direction: string[]): void {
       const that = this;
       const index = this.list.findIndex(item => item.id == id);
       const scrollX = that.$el.scrollLeft;
-      
-      function resize(e: MouseEvent) {
-         const newX = (e.clientX - that.left + scrollX);
-         that.list[index].coord.splice(0, 1, newX);
-         that.list[index].width -= e.movementX;
-      }
-
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-
-   private resizeRight(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-      const scrollX = that.$el.scrollLeft;
-
-      function resize(e: MouseEvent) {
-         that.list[index].width += e.movementX;
-      }
-
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-   
-   private resizeTop(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-      const scrollY = that.$el.scrollTop;
-      
-      function resize(e: MouseEvent) {
-         const newY = e.clientY - 30 + scrollY;
-         that.list[index].coord.splice(1, 1, newY);
-         that.list[index].height -= e.movementY;
-      }
-
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-
-   private resizeBottom(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
       const scrollY = that.$el.scrollTop;
 
-      function resize(e: MouseEvent) {
-         const newY = e.clientY - 30 + scrollY;
-         that.list[index].height += e.movementY;
+      function onResize(e: MouseEvent) {
+         const newX = (e.clientX - that.left) / that.zoom + scrollX;
+         const newY = (e.clientY - 30) / that.zoom + scrollY;
+
+         if (direction.indexOf('left') !== -1) {
+            that.list[index].coord.splice(0, 1, newX);
+            that.list[index].width -= e.movementX / that.zoom;
+         } else if (direction.indexOf('right') !== -1) { 
+            that.list[index].width += e.movementX / that.zoom;
+         }
+         
+         if (direction.indexOf('top') !== -1) {
+            that.list[index].coord.splice(1, 1, newY);
+            that.list[index].height -= e.movementY / that.zoom;
+         } else if (direction.indexOf('bottom') !== -1) { 
+            that.list[index].height += e.movementY / that.zoom;
+         }
       }
 
       function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
+         this.removeEventListener('mousemove', onResize);
          this.removeEventListener('mouseup', clean);
       }
 
-      window.addEventListener('mousemove', resize);
+      window.addEventListener('mousemove', onResize);
       window.addEventListener('mouseup', clean);
    }
 
-   private resizeTopLeft(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-
-      function resize(e: MouseEvent) {
-         const newX = (e.clientX - that.left + scrollX);
-         const newY = e.clientY - 30 + scrollY;
-         that.list[index].coord.splice(0, 1, newX);
-         that.list[index].coord.splice(1, 1, newY);
-         that.list[index].height -= e.movementY;
-         that.list[index].width -= e.movementX;
+   private wheel(e: WheelEvent): void {
+      const clearZoom = Math.round((this.zoom * 10));
+      if (e.deltaY > 0) { 
+         if (clearZoom === 4) {
+            this.zoom = 0.4
+         } else {
+            this.zoom -= 0.1;
+         }
       }
-
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
+      if (e.deltaY < 0) {
+         if (clearZoom === 15) {
+            this.zoom = 1.5;
+         } else {
+            this.zoom += 0.1; 
+         }
       }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-
-   private resizeBottomLeft(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-
-      function resize (e: MouseEvent) {
-         const newX = (e.clientX - that.left + scrollX);
-         that.list[index].coord.splice(0, 1, newX);
-         that.list[index].height += e.movementY;
-         that.list[index].width -= e.movementX;
-      }
-
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-
-   private resizeTopRight(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-      
-      function resize(e: MouseEvent) {
-         const newY = e.clientY - 30 + scrollY;
-         that.list[index].coord.splice(1, 1, newY);
-         that.list[index].height -= e.movementY;
-         that.list[index].width += e.movementX;
-      }
-      
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
-   }
-
-   private resizeBottomRight(e: MouseEvent, id: number): void {
-      const that = this;
-      const index = this.list.findIndex(item => item.id == id);
-      
-      function resize(e: MouseEvent) {
-         that.list[index].height += e.movementY;
-         that.list[index].width += e.movementX;
-      }
-      
-      function clean(this: any, e: MouseEvent) {
-         this.removeEventListener('mousemove', resize);
-         this.removeEventListener('mouseup', clean);
-      }
-
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', clean);
    }
 
 }
@@ -303,7 +206,7 @@ export default class LayoutBL extends Vue {
       &-wrapper {
          width: 100%;
          height: 100%;
-         background: red;
+         background: #fff;
          position: relative;
       }
 

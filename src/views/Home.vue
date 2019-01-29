@@ -2,8 +2,8 @@
   <div class="home">
     <router-link to="/"><img alt="ИМЦ логотип" src="../assets/logo.png"></router-link>
     <div id="nav">
-      <router-link to="/default">Документы</router-link> |
-      <router-link to="/default">Формы</router-link> |
+      <router-link class="disabledLink" to="/">Документы</router-link> |
+      <router-link class="disabledLink" to="/">Формы</router-link> |
       <router-link to="/bl_designer">Процессы</router-link>
     </div>
   </div>
@@ -25,7 +25,7 @@ export default class Home extends Vue {}
     align-items: center;
   }
   #nav {
-  padding: 30px;
+    padding: 30px;
     a {
       font-weight: bold;
       color: #2c3e50;
@@ -34,6 +34,10 @@ export default class Home extends Vue {}
         color: #42b983;
       }
     }
+  }
+
+  .disabledLink {
+    cursor: not-allowed;
   }
 </style>
 
