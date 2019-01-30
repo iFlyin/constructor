@@ -14,7 +14,7 @@
                v-for="(item, index) of panel.list" 
                :key="index"
                :draggable="panel.d$d"
-               @dragstart="dragStart($event, item)"
+               @dragstart="dragStart($event, item, item.type)"
             >
             {{item.name}}
             </div>
@@ -38,8 +38,8 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class Accordion extends Vue {
    private activePanel: number = 0;
 
-   private dragStart(e: any, item: any) {
-      e.dataTransfer.setData('component', JSON.stringify(item));
+   private dragStart(e: any, item: any, type: string) {
+      e.dataTransfer.setData(type, JSON.stringify(item));
    }
 }
 </script>

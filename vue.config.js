@@ -3,7 +3,8 @@ module.exports = {
   configureWebpack: {
     devtool: 'source-map'
   },
-  baseUrl: '/form-designer.io/',
+  // publicPath: '/constructor/',
+
   css: {
     extract: false
   },

@@ -3,13 +3,17 @@ export const businessLogic = {
    state: {
       components: [
          {
+            type: 'screen',
             name: 'Экран',
             width: 200,
             height: 120
          },
-         // {
-         //    name: 'ЦМС'
-         // }
+         {
+            type: 'item',
+            name: 'Компонент',
+            width: 120,
+            height: 80
+         }
       ]
    },
    getters: {

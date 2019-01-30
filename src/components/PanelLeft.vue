@@ -7,7 +7,7 @@
       <div 
          class="ew-resize"
          :style="{ left: (width - 5) + 'px' }"
-         @mousedown="resize()"
+         @mousedown.prevent="resize()"
       />
    </div>
 </template>

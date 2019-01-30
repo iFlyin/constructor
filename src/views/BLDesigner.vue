@@ -18,13 +18,11 @@
         }
       ]"/>
     </panel-left>
-    <div class="flex-element flex-column">
-      <div class="flex-element flex-row">
-        <div class="flex-element">
-          <app-canvas :width="canvasWidth" :height="canvasHeight">
-            <layout-b-l :left="LeftWidth"/>
-          </app-canvas>
-        </div>
+    <div class="flex-column">
+      <div class="flex-row">
+        <app-canvas :width="canvasWidth" :height="canvasHeight">
+          <layout-b-l :left="LeftWidth"/>
+        </app-canvas>
         <panel-right :width="RightWidth" @resize="RightWidth = $event"/> 
       </div>
       <panel-footer :height="FooterHeight" @resize="FooterHeight = $event"/>

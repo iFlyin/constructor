@@ -7,7 +7,7 @@
       <div 
          class="ns-resize"
          :style="{ bottom: (height - 5) + 'px' }"
-         @mousedown="resize()"
+         @mousedown.prevent="resize()"
       />
 
    </div>
