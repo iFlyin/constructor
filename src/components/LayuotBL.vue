@@ -7,9 +7,7 @@
       @keyup.delete="del()"
       tabindex="0"
       @mousewheel.prevent="wheel($event)"
-      :style="{
-         zoom: zoom
-      }"
+      :style="{ zoom: zoom }"
    >
       <screen 
          v-for="(item, index) of list.filter(el => el.type === 'screen')"
