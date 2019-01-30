@@ -11,230 +11,27 @@
          zoom: zoom
       }"
    >
-      <div 
-         class="layout-item"
+      <screen 
          v-for="(item, index) of list.filter(el => el.type === 'screen')"
          :key="index"
-         :style="{
-            left: (item.coord[0]) + 'px',
-            top: item.coord[1] + 'px',
-            width: item.width + 'px',
-            height: item.height + 'px',
-            'border-width': 2 / zoom + 'px'
-         }"
-         :data-id="item.id"
-         @mousedown.stop.prevent="movement($event)"
-         @click.stop.prevent="select($event)"
-      >
-         <div class="layout-item-wrapper">
-            <div class="layout-item-resizer" v-if="item.id == selected">
-               <button 
-                  class="resizer-grid resizer-top-left" 
-                  @mousedown.stop="resize($event, item.id, ['top', 'left'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     top: -12 / zoom + 'px',
-                     left: -12 /zoom + 'px',
-                  }"
-               />
-               <button 
-                  class="resizer-grid resizer-top" 
-                  @mousedown.stop="resize($event, item.id, ['top'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     top: -12 / zoom + 'px',
-                     left: `calc(50% - ${6 / zoom}px)`,
-                  }"
-               />  
-               <button 
-                  class="resizer-grid resizer-top-right"
-                  @mousedown.stop="resize($event, item.id, ['top', 'right'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     top: -12 / zoom + 'px',
-                     right: -12 /zoom + 'px',
-                  }"
-               />
-               <button 
-                  class="resizer-grid resizer-left" 
-                  @mousedown.stop="resize($event, item.id, ['left'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     top: `calc(50% - ${6 / zoom}px)`,
-                     left: -12 /zoom + 'px',
-                  }"
-               />  
-               <button 
-                  class="resizer-grid resizer-right" 
-                  @mousedown.stop="resize($event, item.id, ['right'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     top: `calc(50% - ${6 / zoom}px)`,
-                     right: -12 /zoom + 'px',
-                  }"
-               />                   
-               <button 
-                  class="resizer-grid resizer-bottom-left" 
-                  @mousedown.stop="resize($event, item.id, ['bottom', 'left'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     bottom: -12 / zoom + 'px',
-                     left: -12 /zoom + 'px',
-                  }"
-               />  
-               <button 
-                  class="resizer-grid resizer-bottom" 
-                  @mousedown.stop="resize($event, item.id, ['bottom'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     bottom: -12 / zoom + 'px',
-                     left: `calc(50% - ${6 / zoom}px)`,
-                  }"
-               />   
-               <button 
-                  class="resizer-grid resizer-bottom-right" 
-                  @mousedown.stop="resize($event, item.id, ['bottom', 'right'])"
-                  :style="{
-                     'border-width': 2 / zoom + 'px',
-                     padding: 4 / zoom + 'px',
-                     bottom: -12 / zoom + 'px',
-                     right: -12 /zoom + 'px',
-                  }"
-               />
-            </div>
-            <div class="layout-item-content">
-               <div 
-                  class="layout-item-header"
-                  @drop.stop
-               >
-                  {{item.name}}   
-               </div>   
-               <div 
-                  class="layout-item-canvas"
-                  @drop.stop="dropInside"
-               >
-                  <div 
-                     class="layout-item"
-                     v-for="(component, index) of list.filter(el => el.parent == item.id)" :key="index"
-                     :style="{
-                        left: component.coord[0] + 'px',
-                        top: component.coord[1] + 'px',
-                        width: component.width + 'px',
-                        height: component.height + 'px',
-                        'border-width': 2 / zoom + 'px'
-                     }"
-                     :data-id="component.id"
-                     @click.stop.prevent="select($event)"
-                     @mousedown.stop
-                  >
-                     <div class="layout-item-wrapper" >
-                        <div class="layout-item-resizer" v-if="component.id == selected">
-                           <button 
-                              class="resizer-grid resizer-top-left" 
-                              @mousedown.stop="resize($event, component.id, ['top', 'left'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 top: -12 / zoom + 'px',
-                                 left: -12 /zoom + 'px',
-                              }"
-                           />
-                           <button 
-                              class="resizer-grid resizer-top" 
-                              @mousedown.stop="resize($event, component.id, ['top'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 top: -12 / zoom + 'px',
-                                 left: `calc(50% - ${6 / zoom}px)`,
-                              }"
-                           />  
-                           <button 
-                              class="resizer-grid resizer-top-right"
-                              @mousedown.stop="resize($event, component.id, ['top', 'right'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 top: -12 / zoom + 'px',
-                                 right: -12 /zoom + 'px',
-                              }"
-                           />
-                           <button 
-                              class="resizer-grid resizer-left" 
-                              @mousedown.stop="resize($event, component.id, ['left'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 top: `calc(50% - ${6 / zoom}px)`,
-                                 left: -12 /zoom + 'px',
-                              }"
-                           />  
-                           <button 
-                              class="resizer-grid resizer-right" 
-                              @mousedown.stop="resize($event, component.id, ['right'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 top: `calc(50% - ${6 / zoom}px)`,
-                                 right: -12 /zoom + 'px',
-                              }"
-                           />                   
-                           <button 
-                              class="resizer-grid resizer-bottom-left" 
-                              @mousedown.stop="resize($event, component.id, ['bottom', 'left'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 bottom: -12 / zoom + 'px',
-                                 left: -12 /zoom + 'px',
-                              }"
-                           />  
-                           <button 
-                              class="resizer-grid resizer-bottom" 
-                              @mousedown.stop="resize($event, component.id, ['bottom'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 bottom: -12 / zoom + 'px',
-                                 left: `calc(50% - ${6 / zoom}px)`,
-                              }"
-                           />   
-                           <button 
-                              class="resizer-grid resizer-bottom-right" 
-                              @mousedown.stop="resize($event, component.id, ['bottom', 'right'])"
-                              :style="{
-                                 'border-width': 2 / zoom + 'px',
-                                 padding: 4 / zoom + 'px',
-                                 bottom: -12 / zoom + 'px',
-                                 right: -12 /zoom + 'px',
-                              }"
-                           />
-                        </div>
-                        <div class="layout-item-content">
-                           <div class="layout-item-header" @drop.stop>{{component.id}}</div>   
-                           <div class="layout-item-canvas" @drop.stop></div>
-                        </div>
-                     </div>
-
-                  </div>
-               </div>
-            </div>  
-         </div>
-      </div> 
+         :selected="selected"
+         :item="item"
+         :zoom="zoom"
+         :list="list"
+         @select="selected = $event"
+         @movement="movement($event)"
+         @resize="resize($event)"
+         @drop="dropInside($event)"
+      />
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import Screen from '@/components/Screen.vue';
 
 @Component({
+   components: { Screen },
    props: {
       left: {
          type: Number,
@@ -276,7 +73,9 @@ export default class LayoutBL extends Vue {
       focusEl.focus();
    }
 
-   private dropInside(e: any): void {
+   private dropInside(payload: any): void {
+      const e: any = payload.event;
+      const id: number = payload.id;
       let item;
       try {
          item = JSON.parse(e.dataTransfer.getData('item')); 
@@ -284,7 +83,6 @@ export default class LayoutBL extends Vue {
          console.log(err);
          return;
       }
-      // console.log(e.target)
       const centerX = item.width/2;
       const centerY = item.height/2;
       const scrollY = e.target.scrollTop;
@@ -296,18 +94,18 @@ export default class LayoutBL extends Vue {
       item.coord.push(posX);
       item.coord.push(posY + scrollY);
       item.id = ++this.id;
-      const id = e.target.offsetParent.offsetParent.offsetParent.dataset.id;
       item.parent = id;
-      // const index = this.list.findIndex(item => item.id == id);
       this.list.push(item);
+      const focusEl: any = this.$el;
+      focusEl.focus();
    }
 
-   private select (e: MouseEvent): void {
-      const target: any = e.target;
-      const parent: any = target.offsetParent.offsetParent.offsetParent;
-      const id: number = parent.dataset.id;
-      this.selected = id;
-   }
+   // private select (e: MouseEvent): void {
+   //    const target: any = e.target;
+   //    const parent: any = target.offsetParent.offsetParent.offsetParent;
+   //    const id: number = parent.dataset.id;
+   //    this.selected = id;
+   // }
 
    private del(): void {
       let index = null;
@@ -320,10 +118,11 @@ export default class LayoutBL extends Vue {
       }
    }
 
-   private movement(e: any): void {
+   private movement(payload: any): void {
+      const e = payload.event;
+      const id = payload.id;
       const scrollX = this.$el.scrollLeft;
       const scrollY = this.$el.scrollTop;
-      const id: number = e.target.offsetParent.offsetParent.offsetParent.dataset.id;
       const index = this.list.findIndex(item => item.id == id);
       let x: number;
       let y: number;
@@ -348,7 +147,10 @@ export default class LayoutBL extends Vue {
       window.addEventListener('mouseup', clean);
    }
 
-   private resize(e: MouseEvent, id: number, direction: string[]): void {
+   private resize(payload: any): void {
+      const e: MouseEvent = payload.event;
+      const id: number = payload.id;
+      const direction: string[] = payload.direction
       const that = this;
       const index = this.list.findIndex(item => item.id == id);
       const scrollX = that.$el.scrollLeft;

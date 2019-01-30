@@ -1,5 +1,5 @@
 <template>
-   <div 
+   <div
       class="layout-item"
       :style="{
          left: (item.coord[0]) + 'px',
@@ -142,135 +142,18 @@
                   event: $event,
                   id: item.id,
                })"
-            >  
-               <item
-                  v-for="(component, id) of list.filter(el => el.parent == item.id)"
-                  :key="id"
-                  :item="component"
-                  :zoom="zoom"
-                  :selected="selected"
-                  @select="$emit('select', $event)"
-               />
-               <!-- <div 
-                  class="layout-item"
-                  v-for="(component, index) of list.filter(el => el.parent == item.id)" :key="index"
-                  :style="{
-                     left: component.coord[0] + 'px',
-                     top: component.coord[1] + 'px',
-                     width: component.width + 'px',
-                     height: component.height + 'px',
-                     'border-width': 2 / zoom + 'px'
-                  }"
-                  :data-id="component.id"
-                  @click.stop.prevent="select($event)"
-                  @mousedown.stop
-               >
-                  <div class="layout-item-wrapper" >
-                     <div class="layout-item-resizer" v-if="component.id == selected">
-                        <button 
-                           class="resizer-grid resizer-top-left" 
-                           @mousedown.stop="resize($event, component.id, ['top', 'left'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              top: -12 / zoom + 'px',
-                              left: -12 /zoom + 'px',
-                           }"
-                        />
-                        <button 
-                           class="resizer-grid resizer-top" 
-                           @mousedown.stop="resize($event, component.id, ['top'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              top: -12 / zoom + 'px',
-                              left: `calc(50% - ${6 / zoom}px)`,
-                           }"
-                        />  
-                        <button 
-                           class="resizer-grid resizer-top-right"
-                           @mousedown.stop="resize($event, component.id, ['top', 'right'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              top: -12 / zoom + 'px',
-                              right: -12 /zoom + 'px',
-                           }"
-                        />
-                        <button 
-                           class="resizer-grid resizer-left" 
-                           @mousedown.stop="resize($event, component.id, ['left'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              top: `calc(50% - ${6 / zoom}px)`,
-                              left: -12 /zoom + 'px',
-                           }"
-                        />  
-                        <button 
-                           class="resizer-grid resizer-right" 
-                           @mousedown.stop="resize($event, component.id, ['right'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              top: `calc(50% - ${6 / zoom}px)`,
-                              right: -12 /zoom + 'px',
-                           }"
-                        />                   
-                        <button 
-                           class="resizer-grid resizer-bottom-left" 
-                           @mousedown.stop="resize($event, component.id, ['bottom', 'left'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              bottom: -12 / zoom + 'px',
-                              left: -12 /zoom + 'px',
-                           }"
-                        />  
-                        <button 
-                           class="resizer-grid resizer-bottom" 
-                           @mousedown.stop="resize($event, component.id, ['bottom'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              bottom: -12 / zoom + 'px',
-                              left: `calc(50% - ${6 / zoom}px)`,
-                           }"
-                        />   
-                        <button 
-                           class="resizer-grid resizer-bottom-right" 
-                           @mousedown.stop="resize($event, component.id, ['bottom', 'right'])"
-                           :style="{
-                              'border-width': 2 / zoom + 'px',
-                              padding: 4 / zoom + 'px',
-                              bottom: -12 / zoom + 'px',
-                              right: -12 /zoom + 'px',
-                           }"
-                        />
-                     </div>
-                     <div class="layout-item-content">
-                        <div class="layout-item-header" @drop.stop>{{component.id}}</div>   
-                        <div class="layout-item-canvas" @drop.stop></div>
-                     </div>
-                  </div>
-               </div> -->
+            >
             </div>
-         </div>  
+         </div>
       </div>
+   
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import Item from './Item.vue';
-
 @Component({
-   components: {Item},
    props: {
-      selected: {
-         type: Number,
-         required: true,
-      },
       item: {
          type: Object,
          required: true,
@@ -279,14 +162,14 @@ import Item from './Item.vue';
          type: Number,
          required: true,
       },
-      list: {
-         type: Array,
+      selected: {
+         type: Number,
          required: true,
       }
    }
 })
-export default class Screen extends Vue {
-   private selected!: number;
+export default class Item extends Vue {
+
 }
 </script>
 
@@ -359,3 +242,4 @@ export default class Screen extends Vue {
       }
    }
 </style>
+
