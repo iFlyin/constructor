@@ -12,7 +12,8 @@ export const businessLogic = {
             type: 'item',
             name: 'Компонент',
             width: 120,
-            height: 80
+            height: 80,
+            effect: 0,
          }
       ]
    },

@@ -9,27 +9,39 @@
       @mousewheel.prevent="wheel($event)"
       :style="{ zoom: zoom }"
    >
-      <screen 
+      <cms-screen 
          v-for="(item, index) of list.filter(el => el.type === 'screen')"
          :key="index"
          :selected="selected"
          :item="item"
          :zoom="zoom"
          :list="list"
-         @select="selected = $event"
+         @select="select($event)"
          @movement="movement($event)"
          @resize="resize($event)"
          @drop="dropInside($event)"
+         @change="change($event)"
       />
+      <!-- <div class="line-container"> -->
+         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <path 
+               v-for="(line, index) of lineArr"
+               :key="index"
+               :d="line"
+               stroke="black" stroke-width="3"
+            />  
+         </svg>
+         <!-- :d="'M' + line.start[0] + ',' + line.start[1] + ' ' + 'L' + line.end[0] + ',' + line.end[1]" -->
+      <!-- </div> -->
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import Screen from '@/components/Screen.vue';
+import CmsScreen from '@/components/CMSScreen.vue';
 
 @Component({
-   components: { Screen },
+   components: { CmsScreen },
    props: {
       left: {
          type: Number,
@@ -83,13 +95,14 @@ export default class LayoutBL extends Vue {
       }
       const centerX = item.width/2;
       const centerY = item.height/2;
+      const scrollX = e.target.scrollLeft;
       const scrollY = e.target.scrollTop;
       item.coord = new Array();
-      let posX = e.offsetX;
+      let posX = e.offsetX / this.zoom - centerX;
       if (posX < 0) { posX = 0 }
-      let posY = e.offsetY ;
+      let posY = e.offsetY / this.zoom - centerY;
       if (posY < 0) { posY = 0 }
-      item.coord.push(posX);
+      item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
       item.id = ++this.id;
       item.parent = id;
@@ -98,19 +111,24 @@ export default class LayoutBL extends Vue {
       focusEl.focus();
    }
 
-   // private select (e: MouseEvent): void {
-   //    const target: any = e.target;
-   //    const parent: any = target.offsetParent.offsetParent.offsetParent;
-   //    const id: number = parent.dataset.id;
-   //    this.selected = id;
-   // }
+   private select(id: number): void {
+      this.selected = id;
+      const focusEl: any = this.$el;
+      focusEl.focus();
+   }
 
    private del(): void {
       let index = null;
       if (this.selected != 0) {
          index = this.list.findIndex(item => item.id == this.selected);
+         const delArr = this.list.filter(item => item.parent == this.selected);
          if (index || index === 0) {
             this.list.splice(index, 1);
+            for (let i=0; i<delArr.length; i++) {
+               const id = delArr[i].id;
+               index = this.list.findIndex(item => item.id == id);
+               this.list.splice(index, 1);
+            }
             this.selected = 0;
          }
       }
@@ -118,6 +136,12 @@ export default class LayoutBL extends Vue {
 
    private movement(payload: any): void {
       const e = payload.event;
+      let parentOffsetX: number = 0;
+      let parentOffsetY: number = 0;
+      if (payload.hasOwnProperty('parentOffset')){
+         parentOffsetX = payload.parentOffset[0];
+         parentOffsetY = payload.parentOffset[1];
+      }
       const id = payload.id;
       const scrollX = this.$el.scrollLeft;
       const scrollY = this.$el.scrollTop;
@@ -129,9 +153,9 @@ export default class LayoutBL extends Vue {
       const offsetY = e.offsetY;
       
       function move(e: MouseEvent): void {
-         x = (e.clientX - offsetX - that.left) / that.zoom  + scrollX;
+         x = (e.clientX - offsetX - that.left) / that.zoom  + scrollX - parentOffsetX;
          if (x < 0) { x = 0; }
-         y = (e.clientY - 30 - offsetY) / that.zoom + scrollY;
+         y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
          if (y < 0) { y = 0; }
          that.list[index].coord = [x, y];
       }
@@ -147,6 +171,12 @@ export default class LayoutBL extends Vue {
 
    private resize(payload: any): void {
       const e: MouseEvent = payload.event;
+      let parentOffsetX: number = 0;
+      let parentOffsetY: number = 0;
+      if (payload.hasOwnProperty('parentOffset')){
+         parentOffsetX = payload.parentOffset[0];
+         parentOffsetY = payload.parentOffset[1];
+      }
       const id: number = payload.id;
       const direction: string[] = payload.direction
       const that = this;
@@ -155,19 +185,27 @@ export default class LayoutBL extends Vue {
       const scrollY = that.$el.scrollTop;
 
       function onResize(e: MouseEvent) {
-         const newX = (e.clientX - that.left) / that.zoom + scrollX;
-         const newY = (e.clientY - 30) / that.zoom + scrollY;
+         const newX = (e.clientX - that.left - parentOffsetX) / that.zoom + scrollX;
+         const newY = (e.clientY - 30 - parentOffsetY) / that.zoom + scrollY;
 
          if (direction.indexOf('left') !== -1) {
-            that.list[index].coord.splice(0, 1, newX);
-            that.list[index].width -= e.movementX / that.zoom;
+            if (newX > 0) {
+               that.list[index].coord.splice(0, 1, newX);
+               that.list[index].width -= e.movementX / that.zoom;
+            } else {
+               that.list[index].coord.splice(0, 1, 0);
+            }
          } else if (direction.indexOf('right') !== -1) { 
             that.list[index].width += e.movementX / that.zoom;
          }
          
          if (direction.indexOf('top') !== -1) {
-            that.list[index].coord.splice(1, 1, newY);
-            that.list[index].height -= e.movementY / that.zoom;
+            if (newY > 0) {
+               that.list[index].coord.splice(1, 1, newY);
+               that.list[index].height -= e.movementY / that.zoom;
+            } else  {
+               that.list[index].coord.splice(1, 1, 0);
+            }
          } else if (direction.indexOf('bottom') !== -1) { 
             that.list[index].height += e.movementY / that.zoom;
          }
@@ -200,6 +238,29 @@ export default class LayoutBL extends Vue {
       }
    }
 
+   private change(e: any): void {
+      const index = this.list.findIndex(el => el.id == e.id);
+      this.list[index].effect = e.value;
+   }
+
+   private get lineArr(): any[] {
+      const arrElem = this.list.filter(el => el.type === "item" && el.effect != 0);
+      const lineArr: any[] = new Array();
+      for (let i = 0; i < arrElem.length ;i++) {
+         const parentIndex = this.list.findIndex(el => el.id == arrElem[i].parent);
+         const parentX = this.list[parentIndex].coord[0];
+         const startX = arrElem[i].coord[0] + (arrElem[i].width / 2) + parentX;
+         const parentY = this.list[parentIndex].coord[1];
+         const startY = arrElem[i].coord[1] + (arrElem[i].height / 2) + parentY;
+         const effectIndex = this.list.findIndex(el => el.id == arrElem[i].effect);
+         const endX = this.list[effectIndex].coord[0] + (this.list[effectIndex].width / 2);
+         const endY = this.list[effectIndex].coord[1] + (this.list[effectIndex].height / 2);
+         const lineNote = `M ${startX},${startY} L ${endX},${endY}`
+         lineArr.push(lineNote);
+      }
+      return lineArr;
+   }
+
 }
 </script>
 
@@ -215,71 +276,12 @@ export default class LayoutBL extends Vue {
       overflow: auto;
    }
 
-   .layout-item {
-      border-style: solid;
-      border-color: black;
-      box-sizing: border-box;
-      z-index: 100;
+   .line-container {
+      top: 0;
+      left: 0;
       position: absolute;
-
-      &-wrapper {
-         width: 100%;
-         height: 100%;
-         background: #fff;
-         position: relative;
-      }
-
-      &-resizer {
-         height: 100%;
-         width: 100%;
-         outline: 2px dashed grey;
-         position: absolute;
-         top: 0;
-         left: 0;
-      }
-      
-      &-content {
-         position: absolute;
-         top: 0;
-         left: 0;
-         height: 100%;
-         width: 100%;
-         display: flex;
-         flex-flow: column nowrap;
-      }
-
-      &-header {
-         min-height: 40px;
-         padding: 10px;
-         width: 100%;
-         box-sizing: border-box;
-         outline: 1px solid black;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         user-select: none;
-      }
-
-      &-canvas {
-         flex: 1 1 auto;
-         overflow: auto;
-         position: relative;
-      }
-   }
-
-   .resizer {
-      &-grid{
-         position: absolute;
-         box-sizing: border-box;
-         border-style: dashed;
-         border-color: grey;
-         height: 0;
-         outline: none;
-         background: transparent;
-         
-         &:hover {
-            border-color: red;
-         }
-      }
+      width: 100%;
+      height: 100%;
+      background-color: green;
    }
 </style>
