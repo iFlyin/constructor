@@ -22,22 +22,35 @@
          @drop="dropInside($event)"
          @change="change($event)"
       />
-      <!-- <div class="line-container"> -->
          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+               <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                 <polygon points="0 0, 10 3.5, 0 7" 
+                  fill="red"
+                 />
+               </marker>
+            </defs>
             <path 
                v-for="(line, index) of lineArr"
                :key="index"
                :d="line"
                stroke="black" stroke-width="3"
-            />  
+               marker-end="url(#arrowhead)"
+            />
+            <path
+               v-for="(rect, index) of fakeRect"
+               :key="'rect' + index"
+               :d="rect.path"
+               fill="transparent"
+               stroke="transparent" stroke-width="0"
+            />
          </svg>
-         <!-- :d="'M' + line.start[0] + ',' + line.start[1] + ' ' + 'L' + line.end[0] + ',' + line.end[1]" -->
-      <!-- </div> -->
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import intersect  from 'path-intersection';
 import CmsScreen from '@/components/CMSScreen.vue';
 
 @Component({
@@ -245,7 +258,7 @@ export default class LayoutBL extends Vue {
 
    private get lineArr(): any[] {
       const arrElem = this.list.filter(el => el.type === "item" && el.effect != 0);
-      const lineArr: any[] = new Array();
+      const fakeLineArr: any[] = new Array();
       for (let i = 0; i < arrElem.length ;i++) {
          const parentIndex = this.list.findIndex(el => el.id == arrElem[i].parent);
          const parentX = this.list[parentIndex].coord[0];
@@ -253,14 +266,51 @@ export default class LayoutBL extends Vue {
          const parentY = this.list[parentIndex].coord[1];
          const startY = arrElem[i].coord[1] + (arrElem[i].height / 2) + parentY;
          const effectIndex = this.list.findIndex(el => el.id == arrElem[i].effect);
-         const endX = this.list[effectIndex].coord[0] + (this.list[effectIndex].width / 2);
-         const endY = this.list[effectIndex].coord[1] + (this.list[effectIndex].height / 2);
-         const lineNote = `M ${startX},${startY} L ${endX},${endY}`
-         lineArr.push(lineNote);
+         const fakeEndX = this.list[effectIndex].coord[0] + (this.list[effectIndex].width / 2);
+         const fakeEndY = this.list[effectIndex].coord[1] + (this.list[effectIndex].height / 2);
+         const fakePath = `M ${startX},${startY} L ${fakeEndX},${fakeEndY}`;
+         const fakeRectIndex = this.fakeRect.findIndex(el => el.id == arrElem[i].effect);
+         const fakeRectPath = this.fakeRect[fakeRectIndex].path;
+         const realEnd = intersect(fakePath, fakeRectPath);
+         const endX = realEnd[0].x;
+         const endY = realEnd[0].y;
+         const realPath = `M ${startX},${startY} L ${endX},${endY}`;
+         fakeLineArr.push(realPath);
       }
-      return lineArr;
+      return fakeLineArr;
    }
 
+   private get fakeRect(): any[] {
+      const rectArr = this.list.filter(el => el.hasOwnProperty('parent') === false);
+      const newObject = new Array();
+      for (let i = 0; i < rectArr.length; i++) {
+         const id = rectArr[i].id;
+         const x = rectArr[i].coord[0] - 20;
+         const y = rectArr[i].coord[1] - 20;
+         const w = rectArr[i].width + 40;
+         const h = rectArr[i].height + 40;
+         const path = `
+            M ${x},${y} 
+            L ${x + w},${y}
+            L ${x + w}, ${y + h}
+            L ${x}, ${y + h}
+            Z
+         `
+         newObject.push({
+            id: id,
+            path: path,
+         })
+      }
+      return newObject;
+   } 
+
+   private get collision(): any {
+      let newIntersect = new Array();
+      if (this.lineArr.length > 1) {
+         newIntersect = intersect(this.lineArr[0], this.lineArr[1]);
+      }
+      return newIntersect;
+   } 
 }
 </script>
 

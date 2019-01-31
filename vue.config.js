@@ -3,7 +3,7 @@ module.exports = {
   configureWebpack: {
     devtool: 'source-map'
   },
-  // publicPath: '/constructor/',
+  publicPath: '/constructor/',
 
   css: {
     extract: false
