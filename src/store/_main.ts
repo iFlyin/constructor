@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { businessLogic } from './businessLogic';
+import CMS from './CMS';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { businessLogic },
+  modules: { CMS },
 });

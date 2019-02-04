@@ -28,7 +28,7 @@
                      id: item.id,
                   })"
                >
-                  {{item.name}} {{item.id}} 
+                  {{item.typeName}} {{item.id}} 
                </div>   
                <div 
                   class="layout-item-canvas"
@@ -121,15 +121,7 @@ export default class CMSScreen extends Vue {
    private get height(): number { return this.item.height; }
    private get centerX(): number { return this.X + (this.width / 2); }
    private get centerY(): number { return this.Y + (this.height); }
-   private get path(): string {
-      return `
-         M ${this.X},${this.Y}
-         L${this.X + this.width},${this.Y}
-         L${this.X + this.width},${this.Y + this.height}
-         L${this.X},${this.Y + this.height}
-         Z
-      `
-   }
+   private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
 
    private get childsList(): any[] {
       return this.list.filter(el => el.parent == this.item.id);
@@ -142,34 +134,24 @@ export default class CMSScreen extends Vue {
          const name = "id" + obj.id;
          const arr = new Array();
          const startX = obj.coord[0] + (obj.width / 2) + this.X;
-         const startY = obj.coord[1] + (obj.height - 40 / 2) + this.Y;
+         const startY = obj.coord[1] + (obj.height / 2) + this.Y + 40;
          const targetInd = this.list.findIndex(el => el.id == obj.effect);
          const targetObj = this.list[targetInd];
          const targetX = targetObj.coord[0] - 10;
          const targetY = targetObj.coord[1] - 10;
          const targetW = targetObj.width + 20;
          const targetH = targetObj.height + 20;
-         const targetPath = `
-            M${targetX},${targetY}
-            L${targetX + targetW},${targetY}
-            L${targetX + targetW},${targetY + targetH}
-            L${targetX},${targetY + targetH}
-            Z
-         `
-         const path = `M${startX},${startY} L${targetX + (targetW/2)},${targetY + (targetH/2 - 40)}`;
+
+         const targetPath = this.rectConstructor(targetX, targetY, targetW, targetH);
+         const path = `M${startX},${startY} L${targetX + (targetW/2)},${targetY + (targetH/2)}`;
          const realStartX = intersect(path, this.path)[0].x;
          const realStartY = intersect(path, this.path)[0].y;
          const realEndX = intersect(path, targetPath)[0].x;
          const realEndY = intersect(path, targetPath)[0].y;
-
-         const realPath = `M${startX},${startY}L${realEndX},${realEndY}`
-         lines.push(realPath)
+         const realPath = this.lineConstructor(startX, startY, realEndX, realEndY);
+         lines.push(realPath);
       }
       return lines;
-   }
-
-   private get childCollision(): any {
-      return 1;
    }
 
    private resize(e: any): void {
@@ -184,6 +166,14 @@ export default class CMSScreen extends Vue {
       const parentY = this.item.coord[1] + 40;
       e.parentOffset = [parentX, parentY];
       this.$emit('movement', e);
+   }
+
+   private rectConstructor(x: number, y: number, w: number, h: number): string {
+      return `M${x},${y}L${x + w},${y}L${x + w},${y + h}L${x},${y + h}Z`;
+   }
+
+   private lineConstructor(x1: number, y1: number, x2: number, y2: number): string {
+      return `M${x1},${y1}L${x2},${y2}`
    }
 }
 </script>

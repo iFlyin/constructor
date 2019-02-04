@@ -4,7 +4,7 @@
     <panel-left :width="LeftWidth" @resize="LeftWidth = $event">
       <accordion :list="[
         {
-          name: LeftWidth,
+          name: 'Блок',
           list: components,
           d$d: true,
         },
@@ -33,21 +33,25 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import MainMenu from '@/components/MainMenu.vue';
 import PanelLeft from '@/components/PanelLeft.vue';
 import PanelRight from '@/components/PanelRight.vue';
 import PanelFooter from '@/components/PanelFooter.vue';
 import AppCanvas from '@/components/Canvas.vue';
 import Accordion from '@/components/Accordion.vue';
-import LayoutBL from '@/components/LayuotBL.vue';
+import LayoutBL from '@/components/CMSLayout.vue';
 
 @Component ({
   components: { MainMenu, PanelLeft, PanelRight, PanelFooter, AppCanvas, Accordion, LayoutBL },
   computed: {
-    ...mapGetters('businessLogic', {
-      components: 'getComponents',
+    ...mapGetters('CMS', {
+      weblook: 'getWebLook', 
+      screen: 'getScreen',
+      block: 'getBlock',
     }),
   },
+  methods: { ...mapActions('CMS', ['asyncGetLook']) },
 })
 
 export default class UMLDesigner extends Vue {
@@ -56,6 +60,31 @@ export default class UMLDesigner extends Vue {
   private FooterHeight: number = 132;
   private windowWidth: number = window.innerWidth;
   private windowHeight: number = window.innerHeight;
+  private asyncGetLook!: any;
+  private weblook!: any[];
+  private screen!: any;
+  private block!: any;
+
+  private get components(): any[] {
+    const newArr: any[] = new Array();
+    newArr.push(this.screen);
+    for (const item of this.weblook) {
+      // console.log(item);
+      const newItem = {
+        type: this.block.type,
+        width: this.block.width,
+        height: this.block.height,
+        typeName: item.name,
+        look: item.id,
+        effect: 0,
+        constName: item.const_name,
+        name: 'Имя компонента',
+        fullname: 'Имя компонента',
+      }
+      newArr.push(newItem);
+    }
+    return newArr;
+  }
 
   private get canvasWidth(): number {
     return this.windowWidth - this.LeftWidth - this.RightWidth;
@@ -71,6 +100,10 @@ export default class UMLDesigner extends Vue {
       that.windowWidth = window.innerWidth;
       that.windowHeight = window.innerHeight;
     })
+  }
+
+  private created(): void {
+    this.asyncGetLook();
   }
 }
 </script>
@@ -101,3 +134,4 @@ export default class UMLDesigner extends Vue {
   }
 
 </style>
+

@@ -16,7 +16,7 @@
                :draggable="panel.d$d"
                @dragstart="dragStart($event, item, item.type)"
             >
-            {{item.name}}
+            {{item.typeName}}
             </div>
          </div>
       </div>

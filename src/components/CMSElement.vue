@@ -1,6 +1,7 @@
 <template>
    <div
       class="layout-item"
+      :class="{'layout-item-active': selected == item.id}"
       :style="{
          'z-index': (item.id == selected) ? '1000000' : '',
          left: (item.coord[0]) + 'px',
@@ -12,12 +13,12 @@
       @click.stop.prevent="$emit('select', item.id)"
    >
       <div class="layout-item-wrapper">
-         <select-resize 
+         <!-- <select-resize 
             v-if="item.id == selected"
             :zoom="zoom"
             :id="item.id"
             @resize="$emit('resize', $event)"
-         />
+         /> -->
          <div class="layout-item-content">
             <div 
                class="layout-item-header"
@@ -27,7 +28,7 @@
                   id: item.id,
                })"
             >
-               {{item.name}} {{item.id}} 
+               {{item.typeName}}
             </div>   
             <div 
                class="layout-item-canvas"
@@ -37,8 +38,33 @@
                })"
                @mousedown.stop
             >
-               <label>Эффект
-                  <select @mousedown.stop v-model="model">
+               <div class="layout-item-row">
+                  <div class="layout-item-id">{{item.id}}</div>
+                  <div 
+                     class="layout-item-name" 
+                     :contenteditable="editable" 
+                     @dblclick="editable = true"
+                     @keyup.delete.stop
+                  >
+                     {{item.name}}
+                  </div>
+               </div>
+               <div class="layout-item-row">
+                  <label>Эффект 
+                     <select v-model="model">
+                        <option value="0">0</option>
+                        <option 
+                           v-for="(obj, index) of list.filter(el => el.hasOwnProperty('parent') === false)"
+                           :key="index"
+                           :value="obj.id">
+                           {{obj.id}}
+                        </option>
+                     </select>
+                  </label>
+               </div>
+               
+               <!-- <label>Эффект
+                  <select v-model="model">
                      <option :value="0">0</option>
                      <option
                         v-for="(obj, index) of list.filter(el => el.hasOwnProperty('parent') === false)"
@@ -48,7 +74,7 @@
                         {{obj.id}}
                      </option>
                   </select>
-               </label>
+               </label> -->
             </div>
          </div>
       </div>
@@ -82,6 +108,7 @@ import SelectResize from './SelectResize.vue';
    }
 })
 export default class CMSElement extends Vue {
+   private editable = false;
    private item!: any;
 
    private get model(): number {
@@ -104,6 +131,8 @@ export default class CMSElement extends Vue {
       box-sizing: border-box;
       z-index: 100;
       position: absolute;
+      border-radius: 25px;
+      overflow: hidden;
 
       &-wrapper {
          width: 100%;
@@ -148,6 +177,31 @@ export default class CMSElement extends Vue {
          flex: 1 1 auto;
          overflow: auto;
          position: relative;
+      }
+
+      &-active {
+        border-color: red !important;
+      }
+
+      &-row {
+         display: flex;
+         justify-content: space-between;
+         border-bottom: 1px solid #000;
+      }
+
+      &-id {
+         padding: 5px;
+         border-right: 1px solid black;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+      }
+
+      &-name {
+         padding: 5px;
+         display: flex;
+         justify-content: center;
+         align-items: center;
       }
    }
 </style>

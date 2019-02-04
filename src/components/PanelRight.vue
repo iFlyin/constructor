@@ -9,12 +9,12 @@
          :style="{ right: (width - 5) + 'px' }"
          @mousedown.prevent="resize()"
       />
-
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
+// import { mapGetters } from 'vuex';
 
 @Component({
    props: {
@@ -22,7 +22,8 @@ import { Vue, Component} from 'vue-property-decorator';
          type: Number,
          required: true,
       }
-   }
+   },
+   // computed: { ...mapGetters('businessLogic', ['getWebLook']) }
 })
 export default class RightAsidePanel extends Vue {
    public width!: number;

@@ -9,12 +9,13 @@
          :style="{ bottom: (height - 5) + 'px' }"
          @mousedown.prevent="resize()"
       />
-
+      <!-- <span v-for="(item, index) of getWebLook" :key="index">{{item.name}}</span> -->
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
+// import { mapGetters, mapActions } from 'vuex';
 
 @Component({
    props: {
@@ -22,10 +23,22 @@ import { Vue, Component} from 'vue-property-decorator';
          type: Number,
          required: true,
       }
-   }
+   },
+   // computed: {
+   //    ...mapGetters('CMS', ['getWebLook']),
+   // },
+   // methods: {
+   //    ...mapActions('CMS', ['asyncGetLook']),
+   // },
 })
 export default class Footer extends Vue {
    // public height: number = 132;
+   // public asyncGetLook!: any;
+   // public getWebLook!: any[];
+
+   // public created (): void {
+   //    this.asyncGetLook();
+   // }
 
    public resize(): void {
       const that: any = this;
@@ -62,6 +75,7 @@ export default class Footer extends Vue {
    #panel-footer {
       position: relative;
       height: calc(100% - 30px);
+      // max-width: 800px;
       background-color: #b3b3b3;
       overflow: hidden;
    }

@@ -3,7 +3,7 @@
       class="layout"
       @dragover.stop="$event.preventDefault()"
       @drop.stop="drop($event)"
-      @click.prevent="selected = 0"
+      @click.prevent="select(0)"
       @keyup.delete="del()"
       tabindex="0"
       @mousewheel.prevent="wheel($event)"
@@ -22,11 +22,13 @@
          @drop="dropInside($event)"
          @change="change($event)"
       />
+      {{list}}
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { mapMutations, mapGetters } from 'vuex';
 import intersect  from 'path-intersection';
 import CmsScreen from '@/components/CMSScreen.vue';
 
@@ -37,6 +39,12 @@ import CmsScreen from '@/components/CMSScreen.vue';
          type: Number,
          required: true,
       }
+   },
+   computed: {
+      ...mapGetters('CMS', []),
+   },
+   methods: {
+      ...mapMutations('CMS', []),
    }
 })
 
@@ -74,15 +82,17 @@ export default class LayoutBL extends Vue {
    }
 
    private dropInside(payload: any): void {
+      
       const e: any = payload.event;
       const id: number = payload.id;
       let item;
       try {
-         item = JSON.parse(e.dataTransfer.getData('item')); 
+         item = JSON.parse(e.dataTransfer.getData('block')); 
       } catch (err) {
          console.log(err);
          return;
       }
+      // console.log(item);
       const centerX = item.width/2;
       const centerY = item.height/2;
       const scrollX = e.target.scrollLeft;
@@ -103,22 +113,29 @@ export default class LayoutBL extends Vue {
 
    private select(id: number): void {
       this.selected = id;
-      const focusEl: any = this.$el;
-      focusEl.focus();
+      // const focusEl: any = this.$el;
+      // focusEl.focus();
    }
 
    private del(): void {
       let index = null;
       if (this.selected != 0) {
          index = this.list.findIndex(item => item.id == this.selected);
-         const delArr = this.list.filter(item => item.parent == this.selected);
+         const childsArr = this.list.filter(item => item.parent == this.selected);
+         const effectArr = this.list
+            .filter(item => item.type === "item")
+            .filter(item => item.effect === this.selected);
+
          if (index || index === 0) {
-            this.list.splice(index, 1);
-            for (let i=0; i<delArr.length; i++) {
-               const id = delArr[i].id;
-               index = this.list.findIndex(item => item.id == id);
-               this.list.splice(index, 1);
+            for (const item of effectArr) {
+               item.effect = 0;
             }
+            for (const item of childsArr) {
+               const id = item.id;
+               const childIndex = this.list.findIndex(item => item.id == id);
+               this.list.splice(childIndex, 1);
+            }
+            this.list.splice(index, 1);
             this.selected = 0;
          }
       }
@@ -223,7 +240,10 @@ export default class LayoutBL extends Vue {
          if (clearZoom === 15) {
             this.zoom = 1.5;
          } else {
-            this.zoom += 0.1; 
+            this.zoom += 0.1;
+            if (this.$el.scrollWidth > this.$el.clientWidth) {
+               console.log('scroll - top')
+            }
          }
       }
    }
@@ -238,8 +258,8 @@ export default class LayoutBL extends Vue {
 
 <style lang="scss" scoped>
    .layout {
-      width: 100%;
-      height: 100%;
+      min-width: 100%;
+      min-height: 100%;
       display: flex;
       z-index: 1;
       position: relative;
