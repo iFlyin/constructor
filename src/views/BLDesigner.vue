@@ -8,14 +8,6 @@
           list: components,
           d$d: true,
         },
-        {
-          name: RightWidth,
-          list: [{name: 1}],
-        },
-        {
-          name: FooterHeight,
-          list: [],
-        }
       ]"/>
     </panel-left>
     <div class="flex-column">
@@ -34,7 +26,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { mapActions } from 'vuex';
-import MainMenu from '@/components/MainMenu.vue';
+import MainMenu from '@/components/PanelMenu.vue';
 import PanelLeft from '@/components/PanelLeft.vue';
 import PanelRight from '@/components/PanelRight.vue';
 import PanelFooter from '@/components/PanelFooter.vue';
@@ -51,7 +43,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
       block: 'getBlock',
     }),
   },
-  methods: { ...mapActions('CMS', ['asyncGetLook']) },
+  methods: { ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect']) },
 })
 
 export default class UMLDesigner extends Vue {
@@ -61,6 +53,7 @@ export default class UMLDesigner extends Vue {
   private windowWidth: number = window.innerWidth;
   private windowHeight: number = window.innerHeight;
   private asyncGetLook!: any;
+  private asyncGetEffect!: any;
   private weblook!: any[];
   private screen!: any;
   private block!: any;
@@ -104,6 +97,7 @@ export default class UMLDesigner extends Vue {
 
   private created(): void {
     this.asyncGetLook();
+    // this.asyncGetEffect();
   }
 }
 </script>

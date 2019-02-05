@@ -3,26 +3,30 @@
       class="layout"
       @dragover.stop="$event.preventDefault()"
       @drop.stop="drop($event)"
-      @click.prevent="select(0)"
+      @click.prevent="select({
+         id: 0,
+         type: 'none',
+      })"
       @keyup.delete="del()"
       tabindex="0"
       @mousewheel.prevent="wheel($event)"
       :style="{ zoom: zoom }"
    >
       <cms-screen 
-         v-for="(item, index) of list.filter(el => el.type === 'screen')"
+         v-for="(item, index) of screenList"
          :key="index"
          :selected="selected"
          :item="item"
          :zoom="zoom"
          :list="list"
+         :screenList="screenList"
          @select="select($event)"
          @movement="movement($event)"
          @resize="resize($event)"
          @drop="dropInside($event)"
-         @change="change($event)"
+         @change="changeId($event)"
       />
-      {{list}}
+      <!-- {{list}} -->
    </div>
 </template>
 
@@ -41,22 +45,40 @@ import CmsScreen from '@/components/CMSScreen.vue';
       }
    },
    computed: {
-      ...mapGetters('CMS', []),
+      ...mapGetters('CMS', {
+         screenList: 'getScreenList',
+         list: 'getCMSlist',
+      }),
    },
    methods: {
-      ...mapMutations('CMS', []),
+      ...mapMutations('CMS', {
+         add2screenList: 'add2screenList',
+         changeId: 'changeScreenId',
+         deleteScreen: 'delFromScreenList',
+         clearEffect: 'clearCMSeffect',
+         deleteCMS: 'deleteCMS',
+      }),
    }
 })
 
 export default class LayoutBL extends Vue {
    // описать интерфейс объекта и придать типу массива
-   private list: any[] = new Array();
+   private list!: any[];
    private id: number = 0;
+   private screenId: number = -1;
    private left!: number;
    private selected: number = 0;
+   private selectedType: string = 'none';
    private zoom: number = 1;
+   private screenList!: any[];
+   private add2screenList!: any;
+   private changeId!: any;
+   private deleteScreen!: any;
+   private clearEffect!: any;
+   private deleteCMS!: any;
    
    private drop(e: any): void {
+      console.log(e);
       let item;
       try {
          item = JSON.parse(e.dataTransfer.getData('screen'));
@@ -75,14 +97,13 @@ export default class LayoutBL extends Vue {
       if (posY < 0) { posY = 0 }
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
-      item.id = ++this.id;
-      this.list.push(item);
+      item.id = --this.screenId;
+      this.add2screenList(item);
       const focusEl: any = this.$el;
       focusEl.focus();
    }
 
    private dropInside(payload: any): void {
-      
       const e: any = payload.event;
       const id: number = payload.id;
       let item;
@@ -111,37 +132,49 @@ export default class LayoutBL extends Vue {
       focusEl.focus();
    }
 
-   private select(id: number): void {
+   private select(e: any): void {
+      const id: number = e.id;
       this.selected = id;
+      this.selectedType = e.type;
       // const focusEl: any = this.$el;
       // focusEl.focus();
    }
 
    private del(): void {
-      let index = null;
-      if (this.selected != 0) {
-         index = this.list.findIndex(item => item.id == this.selected);
-         const childsArr = this.list.filter(item => item.parent == this.selected);
-         const effectArr = this.list
-            .filter(item => item.type === "item")
-            .filter(item => item.effect === this.selected);
-
-         if (index || index === 0) {
-            for (const item of effectArr) {
-               item.effect = 0;
+      const selected = this.selected;
+      const type = this.selectedType;
+      let index: any = null;
+      const clear = (id: any) => {
+         const list = this.list.filter((el: any) => el.parent == id);
+         if (list.length > 0) {
+            for (const child of list) {
+               clear(child.id);
+               const childIndex = this.list.findIndex((el: any) => el.id == child.id);
+               this.deleteCMS(childIndex);
             }
-            for (const item of childsArr) {
-               const id = item.id;
-               const childIndex = this.list.findIndex(item => item.id == id);
-               this.list.splice(childIndex, 1);
-            }
-            this.list.splice(index, 1);
-            this.selected = 0;
+         }
+         const newIndex = this.screenList.findIndex(item => item.id == id);
+         if (newIndex !== -1) {
+            this.deleteScreen(newIndex);
+         }
+      }
+      if (selected != 0 && selected !=-1) {
+         if (type === 'Screen') {
+            this.clearEffect(selected);
+            clear(selected);
+         } else if (type === 'CMS') {
+            index = this.list.findIndex((el: any) => el.id == selected);
+            clear(selected);
+            this.deleteCMS(index);
+         } else {
+            console.log('ошибка');
          }
       }
    }
 
    private movement(payload: any): void {
+      const type = payload.type;
+      const arr = (type==='screen') ? this.screenList : this.list;
       const e = payload.event;
       let parentOffsetX: number = 0;
       let parentOffsetY: number = 0;
@@ -152,7 +185,7 @@ export default class LayoutBL extends Vue {
       const id = payload.id;
       const scrollX = this.$el.scrollLeft;
       const scrollY = this.$el.scrollTop;
-      const index = this.list.findIndex(item => item.id == id);
+      const index = arr.findIndex(item => item.id == id);
       let x: number;
       let y: number;
       const that = this;
@@ -164,7 +197,7 @@ export default class LayoutBL extends Vue {
          if (x < 0) { x = 0; }
          y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
          if (y < 0) { y = 0; }
-         that.list[index].coord = [x, y];
+         arr[index].coord = [x, y];
       }
 
       function clean(this: any, e: MouseEvent): void {
@@ -187,7 +220,7 @@ export default class LayoutBL extends Vue {
       const id: number = payload.id;
       const direction: string[] = payload.direction
       const that = this;
-      const index = this.list.findIndex(item => item.id == id);
+      const index = this.screenList.findIndex(item => item.id == id);
       const scrollX = that.$el.scrollLeft;
       const scrollY = that.$el.scrollTop;
 
@@ -197,24 +230,24 @@ export default class LayoutBL extends Vue {
 
          if (direction.indexOf('left') !== -1) {
             if (newX > 0) {
-               that.list[index].coord.splice(0, 1, newX);
-               that.list[index].width -= e.movementX / that.zoom;
+               that.screenList[index].coord.splice(0, 1, newX);
+               that.screenList[index].width -= e.movementX / that.zoom;
             } else {
-               that.list[index].coord.splice(0, 1, 0);
+               that.screenList[index].coord.splice(0, 1, 0);
             }
          } else if (direction.indexOf('right') !== -1) { 
-            that.list[index].width += e.movementX / that.zoom;
+            that.screenList[index].width += e.movementX / that.zoom;
          }
          
          if (direction.indexOf('top') !== -1) {
             if (newY > 0) {
-               that.list[index].coord.splice(1, 1, newY);
-               that.list[index].height -= e.movementY / that.zoom;
+               that.screenList[index].coord.splice(1, 1, newY);
+               that.screenList[index].height -= e.movementY / that.zoom;
             } else  {
-               that.list[index].coord.splice(1, 1, 0);
+               that.screenList[index].coord.splice(1, 1, 0);
             }
          } else if (direction.indexOf('bottom') !== -1) { 
-            that.list[index].height += e.movementY / that.zoom;
+            that.screenList[index].height += e.movementY / that.zoom;
          }
       }
 
@@ -249,6 +282,7 @@ export default class LayoutBL extends Vue {
    }
 
    private change(e: any): void {
+      console.log(e);
       const index = this.list.findIndex(el => el.id == e.id);
       this.list[index].effect = e.value;
    }

@@ -8,9 +8,12 @@
          top: item.coord[1] + 'px',
          width: item.width + 'px',
          height: item.height + 'px',
-         'border-width': 2 / zoom + 'px'
+         'border-width': 2 / zoom + 'px',
       }"
-      @click.stop.prevent="$emit('select', item.id)"
+      @click.stop.prevent="$emit('select', {
+         id: item.id,
+         type: 'CMS',
+      })"
    >
       <div class="layout-item-wrapper">
          <!-- <select-resize 
@@ -52,29 +55,26 @@
                <div class="layout-item-row">
                   <label>Эффект 
                      <select v-model="model">
-                        <option value="0">0</option>
-                        <option 
-                           v-for="(obj, index) of list.filter(el => el.hasOwnProperty('parent') === false)"
-                           :key="index"
-                           :value="obj.id">
+                        <template>
+                           <option value="0">0</option>
+                           <option 
+                              v-for="(obj, index) of screenList.filter(el => el.id < -1)"
+                              :key="index"
+                              :value="obj.id"
+                           >
+                              {{obj.id}}
+                           </option>
+                        </template>
+                        <option
+                           v-for="obj of screenList.filter(el => el.id === item.id)"
+                           :key="obj.name"
+                           :value="obj.id"
+                        >
                            {{obj.id}}
                         </option>
                      </select>
                   </label>
                </div>
-               
-               <!-- <label>Эффект
-                  <select v-model="model">
-                     <option :value="0">0</option>
-                     <option
-                        v-for="(obj, index) of list.filter(el => el.hasOwnProperty('parent') === false)"
-                        :key="index"
-                        :value="obj.id"
-                     >
-                        {{obj.id}}
-                     </option>
-                  </select>
-               </label> -->
             </div>
          </div>
       </div>
@@ -84,10 +84,9 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import SelectResize from './SelectResize.vue';
 
 @Component({
-   components: { SelectResize },
+   components: {},
    props: {
       item: {
          type: Object,
@@ -102,6 +101,10 @@ import SelectResize from './SelectResize.vue';
          required: true,
       },
       list: {
+         type: Array,
+         required: true,
+      },
+      screenList: {
          type: Array,
          required: true,
       }

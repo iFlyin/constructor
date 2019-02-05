@@ -8,12 +8,17 @@
             top: item.coord[1] + 'px',
             width: item.width + 'px',
             height: item.height + 'px',
-            'border-width': 2 / zoom + 'px'
+            'border-width': 2 / zoom + 'px',
+            'border-color': (item.active) ? 'black' : 'grey',
+            'border-style': (item.active) ? 'solid' : 'dashed'
          }"
-         @click.stop.prevent="$emit('select', item.id)"
+         @click.stop.prevent="$emit('select', {
+            id: item.id,
+            type: 'Screen'
+         })"
       >
          <div class="layout-item-wrapper">
-            <select-resize 
+            <screen-resize 
                v-if="item.id == selected"
                :zoom="zoom"
                :id="item.id"
@@ -26,16 +31,17 @@
                   @mousedown.stop.prevent="$emit('movement', {
                      event: $event,
                      id: item.id,
+                     type: 'screen',
                   })"
                >
-                  {{item.typeName}} {{item.id}} 
+                  {{ (item.id &lt; 0) ? -(item.id) : '' }} {{item.name || 'Пустой экран'}}
                </div>   
                <div 
                   class="layout-item-canvas"
-                  @drop.stop="$emit('drop', {
+                  @drop.stop="(item.active) ? $emit('drop', {
                      event: $event,
                      id: item.id,
-                  })"
+                  }) : ''"
                   @mousedown.stop.prevent
                >  
                   <cms-element
@@ -44,6 +50,7 @@
                      :zoom="zoom"
                      :selected="selected"
                      :list="list"
+                     :screenList="screenList"
                      @select="$emit('select', $event)"
                      @resize="resize($event)"
                      @movement="movement($event)"
@@ -86,10 +93,10 @@
 import { Vue, Component } from 'vue-property-decorator';
 import CmsElement from './CMSElement.vue';
 import intersect from 'path-intersection';
-import SelectResize from './SelectResize.vue';
+import ScreenResize from './ScreenResize.vue';
 
 @Component({
-   components: {CmsElement, SelectResize},
+   components: {CmsElement, ScreenResize},
    props: {
       selected: {
          type: Number,
@@ -106,6 +113,10 @@ import SelectResize from './SelectResize.vue';
       list: {
          type: Array,
          required: true,
+      },
+      screenList: {
+         type: Array,
+         required: true,
       }
    }
 })
@@ -114,6 +125,7 @@ export default class CMSScreen extends Vue {
    // добавить интерфейс объектов
    private item!: any;
    private list!: any[];
+   private screenList!: any[];
    
    private get X(): number { return this.item.coord[0]; }
    private get Y(): number { return this.item.coord[1]; }
@@ -135,8 +147,8 @@ export default class CMSScreen extends Vue {
          const arr = new Array();
          const startX = obj.coord[0] + (obj.width / 2) + this.X;
          const startY = obj.coord[1] + (obj.height / 2) + this.Y + 40;
-         const targetInd = this.list.findIndex(el => el.id == obj.effect);
-         const targetObj = this.list[targetInd];
+         const targetInd = this.screenList.findIndex(el => el.id == obj.effect);
+         const targetObj = this.screenList[targetInd];
          const targetX = targetObj.coord[0] - 10;
          const targetY = targetObj.coord[1] - 10;
          const targetW = targetObj.width + 20;
@@ -175,6 +187,8 @@ export default class CMSScreen extends Vue {
    private lineConstructor(x1: number, y1: number, x2: number, y2: number): string {
       return `M${x1},${y1}L${x2},${y2}`
    }
+
+   private dropEmit(): void {}
 }
 </script>
 
@@ -196,7 +210,7 @@ export default class CMSScreen extends Vue {
       &-resizer {
          height: 100%;
          width: 100%;
-         outline: 2px dashed grey;
+         outline: 2px solid red;
          position: absolute;
          top: 0;
          left: 0;
@@ -217,7 +231,7 @@ export default class CMSScreen extends Vue {
          padding: 10px;
          width: 100%;
          box-sizing: border-box;
-         outline: 1px solid black;
+         border-bottom: 1px solid black;
          display: flex;
          justify-content: center;
          align-items: center;
