@@ -78,7 +78,7 @@ export default class LayoutBL extends Vue {
    private deleteCMS!: any;
    
    private drop(e: any): void {
-      console.log(e);
+      // console.log(e);
       let item;
       try {
          item = JSON.parse(e.dataTransfer.getData('screen'));
@@ -113,7 +113,6 @@ export default class LayoutBL extends Vue {
          console.log(err);
          return;
       }
-      // console.log(item);
       const centerX = item.width/2;
       const centerY = item.height/2;
       const scrollX = e.target.scrollLeft;

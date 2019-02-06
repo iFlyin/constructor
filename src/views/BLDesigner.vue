@@ -43,7 +43,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
       block: 'getBlock',
     }),
   },
-  methods: { ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect']) },
+  methods: { ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMS']) },
 })
 
 export default class UMLDesigner extends Vue {
@@ -54,6 +54,7 @@ export default class UMLDesigner extends Vue {
   private windowHeight: number = window.innerHeight;
   private asyncGetLook!: any;
   private asyncGetEffect!: any;
+  private asyncGetCMS!: any;
   private weblook!: any[];
   private screen!: any;
   private block!: any;
@@ -69,10 +70,11 @@ export default class UMLDesigner extends Vue {
         height: this.block.height,
         typeName: item.name,
         look: item.id,
-        effect: 0,
+        effect: '',
         constName: item.const_name,
         name: 'Имя компонента',
         fullname: 'Имя компонента',
+        link: false,
       }
       newArr.push(newItem);
     }
@@ -97,7 +99,8 @@ export default class UMLDesigner extends Vue {
 
   private created(): void {
     this.asyncGetLook();
-    // this.asyncGetEffect();
+    this.asyncGetEffect();
+    this.asyncGetCMS();
   }
 }
 </script>

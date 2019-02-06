@@ -7,7 +7,7 @@
          left: (item.coord[0]) + 'px',
          top: item.coord[1] + 'px',
          width: item.width + 'px',
-         height: item.height + 'px',
+         
          'border-width': 2 / zoom + 'px',
       }"
       @click.stop.prevent="$emit('select', {
@@ -16,12 +16,6 @@
       })"
    >
       <div class="layout-item-wrapper">
-         <!-- <select-resize 
-            v-if="item.id == selected"
-            :zoom="zoom"
-            :id="item.id"
-            @resize="$emit('resize', $event)"
-         /> -->
          <div class="layout-item-content">
             <div 
                class="layout-item-header"
@@ -53,27 +47,28 @@
                   </div>
                </div>
                <div class="layout-item-row">
-                  <label>Эффект 
-                     <select v-model="model">
-                        <template>
-                           <option value="0">0</option>
-                           <option 
-                              v-for="(obj, index) of screenList.filter(el => el.id < -1)"
-                              :key="index"
-                              :value="obj.id"
-                           >
-                              {{obj.id}}
-                           </option>
-                        </template>
-                        <option
-                           v-for="obj of screenList.filter(el => el.id === item.id)"
-                           :key="obj.name"
-                           :value="obj.id"
-                        >
-                           {{obj.id}}
-                        </option>
-                     </select>
-                  </label>
+                  <el-select 
+                     :options="effectAvailable"
+                     :selected="item.effect"
+                     :label="'Эффект'"
+                     :name="'name'"
+                     @select="setEffect({
+                        v: $event,
+                        id: item.id,
+                     }), effect = $event"
+                  />
+               </div>
+               <div class="layout-item-row" v-if="!item.link && linkAvailable">
+                  <el-select
+                     :options="screenList.filter(el => el.id < -1)"
+                     :label="'Переход'"
+                     :name="'id'"
+                     :selected="linkTo"
+                     @select="$emit('change', {
+                        value: $event,
+                        id: item.id,
+                     }), linkTo = $event"
+                  />
                </div>
             </div>
          </div>
@@ -84,9 +79,11 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { mapGetters, mapMutations } from 'vuex';
+import ElSelect from '@/components/libs/Select.vue';
 
 @Component({
-   components: {},
+   components: { ElSelect },
    props: {
       item: {
          type: Object,
@@ -108,21 +105,37 @@ import { Vue, Component } from 'vue-property-decorator';
          type: Array,
          required: true,
       }
-   }
+   },
+   computed: {...mapGetters('CMS', {webEffect: 'getWebEffect'})},
+   methods: {...mapMutations('CMS', {setEffect: 'setCMSeffect'})}
 })
 export default class CMSElement extends Vue {
    private editable = false;
    private item!: any;
+   private webEffect!: any[];
+   private setEffect!: any;
+   private effect: any = '';
+   private linkTo: string = '';
+   private effectLink: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 27];
 
-   private get model(): number {
-      return this.item.effect;
+   private get linkAvailable(): boolean {
+      let result = false;
+      for (const i of this.effectLink) {
+         if (i == this.effect) {
+            return result = true;
+         }
+      }
+      return result;
    }
 
-   private set model(v: number) {
-      this.$emit('change', {
-         value: v,
-         id: this.item.id,
-      })
+   private get effectAvailable(): any[] {
+      let result = this.webEffect;
+      if (this.item.link) {
+         return result = this.webEffect.filter((el: any) => {
+            return (this.effectLink.findIndex((item: any) => item == el.id) !== -1);
+         })
+      } 
+      return result
    }
 }
 </script>
@@ -134,27 +147,18 @@ export default class CMSElement extends Vue {
       box-sizing: border-box;
       z-index: 100;
       position: absolute;
-      border-radius: 25px;
-      overflow: hidden;
+      border-radius: 10px;
+      // overflow: hidden;
 
       &-wrapper {
          width: 100%;
          height: 100%;
-         background: #fff;
          position: relative;
-      }
-
-      &-resizer {
-         height: 100%;
-         width: 100%;
-         outline: 2px dashed grey;
-         position: absolute;
-         top: 0;
-         left: 0;
       }
       
       &-content {
-         position: absolute;
+         background-color: #fff;;
+         border-radius: 10px;
          top: 0;
          left: 0;
          height: 100%;
@@ -168,7 +172,7 @@ export default class CMSElement extends Vue {
          padding: 10px;
          width: 100%;
          box-sizing: border-box;
-         outline: 1px solid black;
+         // border-top: 1px solid black;
          display: flex;
          justify-content: center;
          align-items: center;
@@ -189,7 +193,7 @@ export default class CMSElement extends Vue {
       &-row {
          display: flex;
          justify-content: space-between;
-         border-bottom: 1px solid #000;
+         border-top: 1px solid #000;
       }
 
       &-id {

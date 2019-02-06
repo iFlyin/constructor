@@ -3,7 +3,9 @@
       <div 
          class="layout-item"
          :style="{
-            'z-index': (item.id == selected) ? '1000000' : '',
+            'z-index': (childSelected) 
+               ? '1000000' : (item.id == selected)
+               ? '1111' : '',
             left: (item.coord[0]) + 'px',
             top: item.coord[1] + 'px',
             width: item.width + 'px',
@@ -63,17 +65,19 @@
       <div class="svg-wrapper">
          <svg 
             xmlns="http://www.w3.org/2000/svg"
-            width="100%" 
-            height="100%" 
+            width="100%"
+            height="100%"
             :style="{
                position: 'relative',
                'z-index': 1000,
             }"
+            class="svg"
          >
             <defs>
                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                 <polygon points="0 0, 10 3.5, 0 7" 
-                  fill="red"
+                 <polygon 
+                     :points="`0 0, ${10 * zoom} 3.5, 0 7`"
+                     fill="red"
                  />
                </marker>
             </defs>
@@ -139,16 +143,34 @@ export default class CMSScreen extends Vue {
       return this.list.filter(el => el.parent == this.item.id);
    }
 
+   private get childSelected(): boolean {
+      let result = false;
+      // if (this.item.id == this.selected) {
+      //    return result = true;
+      // }
+      for (const child of this.childsList) {
+         if (child.id == this.selected) {
+            return result = true;
+         }
+      }
+      return result;
+   }
+
    private get lines(): any[] {
-      const childWithEffect = this.childsList.filter(el => (el.effect != 0 && el.effect != this.item.id));
+      const availableScreen = this.screenList.filter(el => el.active === true);  
+      const childWithEffect = this.childsList.filter(el => {
+         for (const screen of availableScreen) {
+            if (el.id == screen.id) { return true }
+         }
+      });
       const lines: any = new Array();
       for (const obj of childWithEffect) {
          const name = "id" + obj.id;
          const arr = new Array();
          const startX = obj.coord[0] + (obj.width / 2) + this.X;
          const startY = obj.coord[1] + (obj.height / 2) + this.Y + 40;
-         const targetInd = this.screenList.findIndex(el => el.id == obj.effect);
-         const targetObj = this.screenList[targetInd];
+         const targetInd = availableScreen.findIndex(el => el.id == obj.id);
+         const targetObj = availableScreen[targetInd];
          const targetX = targetObj.coord[0] - 10;
          const targetY = targetObj.coord[1] - 10;
          const targetW = targetObj.width + 20;
@@ -163,6 +185,7 @@ export default class CMSScreen extends Vue {
          const realPath = this.lineConstructor(startX, startY, realEndX, realEndY);
          lines.push(realPath);
       }
+      
       return lines;
    }
 
@@ -188,7 +211,9 @@ export default class CMSScreen extends Vue {
       return `M${x1},${y1}L${x2},${y2}`
    }
 
-   private dropEmit(): void {}
+   private console(): void{
+      console.log(this);
+   }
 }
 </script>
 
