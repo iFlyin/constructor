@@ -112,9 +112,9 @@ export default class UMLDesigner extends Vue {
   }
 
   .flex {
-    &-element {
-      // flex: 1 1 auto;
-    }
+    // &-element {
+    //   // flex: 1 1 auto;
+    // }
 
     &-column {
       display: flex;
