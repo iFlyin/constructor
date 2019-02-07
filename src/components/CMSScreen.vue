@@ -140,7 +140,7 @@ export default class CMSScreen extends Vue {
    private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
 
    private get childsList(): any[] {
-      return this.list.filter(el => el.parent == this.item.id);
+      return this.list.filter(el => el.parent_id == this.item.id);
    }
 
    private get childSelected(): boolean {

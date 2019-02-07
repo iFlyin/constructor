@@ -4,7 +4,7 @@
     <panel-left :width="LeftWidth" @resize="LeftWidth = $event">
       <accordion :list="[
         {
-          name: 'Блок',
+          name: 'СMS-web_look',
           list: components,
           d$d: true,
         },
@@ -15,9 +15,9 @@
         <app-canvas :width="canvasWidth" :height="canvasHeight">
           <layout-b-l :left="LeftWidth"/>
         </app-canvas>
-        <panel-right :width="RightWidth" @resize="RightWidth = $event"/> 
+        <panel-right :width="RightWidth" :height="canvasHeight" @resize="RightWidth = $event"/> 
       </div>
-      <panel-footer :height="FooterHeight" @resize="FooterHeight = $event"/>
+      <!-- <panel-footer :height="FooterHeight" :width="canvasWidth + RightWidth" @resize="FooterHeight = $event"/> -->
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
 export default class UMLDesigner extends Vue {
   private LeftWidth: number = 240;
   private RightWidth: number = 200;
-  private FooterHeight: number = 132;
+  private FooterHeight: number = 0;
   private windowWidth: number = window.innerWidth;
   private windowHeight: number = window.innerHeight;
   private asyncGetLook!: any;

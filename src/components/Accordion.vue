@@ -69,7 +69,7 @@ export default class Accordion extends Vue {
 
             &-item {
                padding: 10px;
-               outline: 1px dashed red;
+               outline: 1px dashed #2c3e50;
                margin: 5px;
                user-select: none;
             }
@@ -93,6 +93,8 @@ export default class Accordion extends Vue {
 
       &-content {
          display: none;
+         border-right: 1px solid #2c3e50;
+         box-sizing: border-box;
       }
    }
 </style>

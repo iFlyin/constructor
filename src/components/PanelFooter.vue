@@ -1,7 +1,10 @@
 <template>
    <div 
       id="panel-footer"
-      :style="{ height: height + 'px' }"
+      :style="{ 
+         height: height + 'px',
+         width: width + 'px',
+      }"
    >
       
       <div 
@@ -9,37 +12,28 @@
          :style="{ bottom: (height - 5) + 'px' }"
          @mousedown.prevent="resize()"
       />
-      <!-- <span v-for="(item, index) of getWebLook" :key="index">{{item.name}}</span> -->
+         
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
-// import { mapGetters, mapActions } from 'vuex';
+import cmsForm from './CMSform.vue';
 
 @Component({
+   components: { cmsForm },
    props: {
       height: {
          type: Number,
          required: true,
+      },
+      width: {
+         type: Number,
+         required: true,
       }
    },
-   // computed: {
-   //    ...mapGetters('CMS', ['getWebLook']),
-   // },
-   // methods: {
-   //    ...mapActions('CMS', ['asyncGetLook']),
-   // },
 })
 export default class Footer extends Vue {
-   // public height: number = 132;
-   // public asyncGetLook!: any;
-   // public getWebLook!: any[];
-
-   // public created (): void {
-   //    this.asyncGetLook();
-   // }
-
    public resize(): void {
       const that: any = this;
 
@@ -73,11 +67,12 @@ export default class Footer extends Vue {
 
 <style lang="scss" scoped>
    #panel-footer {
+      box-sizing: border-box;
       position: relative;
       height: calc(100% - 30px);
-      // max-width: 800px;
-      background-color: #b3b3b3;
+      background-color: #fff;
       overflow: hidden;
+      border-top: 1px solid #2c3e50;
    }
 
    .ns-resize {

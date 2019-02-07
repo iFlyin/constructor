@@ -1,7 +1,10 @@
 <template>
    <div 
       id="panel-right"
-      :style="{ width: width + 'px' }"
+      :style="{ 
+         width: width + 'px',
+         height: height + 'px',
+      }"
    >
       
       <div 
@@ -9,16 +12,23 @@
          :style="{ right: (width - 5) + 'px' }"
          @mousedown.prevent="resize()"
       />
+      <cms-form/>
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
+import cmsForm from './CMSform.vue';
 // import { mapGetters } from 'vuex';
 
 @Component({
+   components: { cmsForm },
    props: {
       width: {
+         type: Number,
+         required: true,
+      },
+      height: {
          type: Number,
          required: true,
       }
@@ -63,8 +73,10 @@ export default class RightAsidePanel extends Vue {
 <style lang="scss" scoped>
    #panel-right {
       position: relative;
-      background-color: grey;
+      background-color: #fff;
       overflow: hidden;
+      border-left: 1px solid #2c3e50;
+      box-sizing: border-box;
    }
 
    .ew-resize {

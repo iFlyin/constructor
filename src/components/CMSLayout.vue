@@ -48,6 +48,9 @@ import CmsScreen from '@/components/CMSScreen.vue';
       ...mapGetters('CMS', {
          screenList: 'getScreenList',
          list: 'getCMSlist',
+         addProps: 'getProp',
+         selected: 'getSelected',
+         selectedType: 'getSelectedType',
       }),
    },
    methods: {
@@ -57,6 +60,7 @@ import CmsScreen from '@/components/CMSScreen.vue';
          deleteScreen: 'delFromScreenList',
          clearEffect: 'clearCMSeffect',
          deleteCMS: 'deleteCMS',
+         select: 'setSelected',
       }),
    }
 })
@@ -67,10 +71,11 @@ export default class LayoutBL extends Vue {
    private id: number = 0;
    private screenId: number = -1;
    private left!: number;
-   private selected: number = 0;
-   private selectedType: string = 'none';
+   private selected!: number;
+   private selectedType!: string;
    private zoom: number = 1;
    private screenList!: any[];
+   private addProps: any;
    private add2screenList!: any;
    private changeId!: any;
    private deleteScreen!: any;
@@ -125,26 +130,30 @@ export default class LayoutBL extends Vue {
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
       item.id = ++this.id;
-      item.parent = id;
+      item.parent_id = id;
+      item.props = new Object();
+      for (const key in this.addProps) {
+         item.props[key] = this.addProps[key];
+      }
       this.list.push(item);
       const focusEl: any = this.$el;
       focusEl.focus();
    }
 
-   private select(e: any): void {
-      const id: number = e.id;
-      this.selected = id;
-      this.selectedType = e.type;
-      // const focusEl: any = this.$el;
-      // focusEl.focus();
-   }
+   // private select(e: any): void {
+   //    // const id: number = e.id;
+   //    // this.selected = id;
+   //    // this.selectedType = e.type;
+   //    // const focusEl: any = this.$el;
+   //    // focusEl.focus();
+   // }
 
    private del(): void {
       const selected = this.selected;
       const type = this.selectedType;
       let index: any = null;
       const clear = (id: any) => {
-         const list = this.list.filter((el: any) => el.parent == id);
+         const list = this.list.filter((el: any) => el.parent_id == id);
          if (list.length > 0) {
             for (const child of list) {
                clear(child.id);

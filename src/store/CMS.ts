@@ -3,6 +3,8 @@ import http from './axios';
 export default {
    namespaced: true,
    state: {
+      selected: 0,
+      selectedType: 'none',
       screenList: [
          {
             type: 'screen',
@@ -45,26 +47,95 @@ export default {
          22: 'Экран поиска документов',
          27: 'Экран с фильтрами и сводными документами',
       },
-      cmsAttribute: {
-         id: 'Код элемента(уник.)', //!возможно
-         d_start: 'Дата создания записи в РИИСЗ', //хз
-         d_fin: 'Дата логического удаления записи при обновлении/удалении данных в РИИСЗ', //хз
-         d_modif: 'Дата актуализации записи при любом обновлении данных в РИИСЗ', //хз
-         systems_id: 'Cистема (подсистема), в которой используется данный раздел/СЭМД', //авто при создании
-         name: 'Экранное краткое наименование элемента при прорисовке веб-интерфейса', // !Внутри
-         fullname: 'Экранное полное наименование элемента при прорисовке веб-интерфейса', // В доп параметрах
-         description: 'Описание элемента', //в допах
-         parent_id: 'Код родительского элемента веб-приложения', //!внутри
-         group_number: 'Порядковый номер элемента внутри группы с заданным parent_id', //в допах
-         db_function_name: 'Наименование функции БД, вызываемой из данного веб-элемента', //хз
-         db_function_params: 'Параметры функции db_function_name', //хз
-         fields_list: 'Список полей для хранеия списка заголовков таблицы', //хз
-         gui_icon: 'Наименование ресурса веб-приложения, соответствующего иконке элемента', //хз
-         look: 'Как нарисовать элемент на экране', //уже на экране
-         effect: 'Что делать по инициации элемента', //на экране
-         add_params: 'Дополнительные параметры прорисовки веб-приложения', //в допах
-         check_right: 'Код права, наличие которого у пользователя, разрешает доступ к данному веб-элементу'//в допах
+      prop_type: {
+         systems_id: {
+            desc: 'Cистема (подсистема), в которой используется данный раздел/СЭМД', 
+            type: 'el-readonly',
+         },
+         id: {
+            desc: 'Код элемента(уник.)',
+            type: 'el-readonly',
+         },
+         parent_id: {
+            desc: 'Код родительского элемента веб-приложения',
+            type: 'el-readonly',
+         },
+         name: {
+            desc: 'Экранное краткое наименование элемента при прорисовке веб-интерфейса',
+            type: 'el-input',
+         },
+         fullname: {
+            desc: 'Экранное полное наименование элемента при прорисовке веб-интерфейса', 
+            type: 'el-input',
+         },
+         description: {
+            desc: 'Описание элемента',
+            type: 'el-textarea',
+         },
+         look: {
+            desc: 'Как нарисовать элемент на экране',
+            type: 'el-readonly'
+         },
+         effect: {
+            desc: 'Что делать по инициации элемента',
+            type: 'el-select',
+         },
+         add_params: {
+            desc: 'Дополнительные параметры прорисовки веб-приложения',
+            type: 'el-textarea'
+         },
+         group_number: {
+            desc: 'Порядковый номер элемента внутри группы с заданным parent_id',
+            type: 'el-input-number'
+         },
+         d_start: { 
+            desc: 'Дата создания записи в РИИСЗ',
+            type: 'el-datepicker',
+         },
+         d_fin: {
+            desc: 'Дата логического удаления записи при обновлении/удалении данных в РИИСЗ',
+            type: 'el-datepicker',
+         },
+         d_modif: {
+            desc: 'Дата актуализации записи при любом обновлении данных в РИИСЗ',
+            type: 'el-datepicker',
+         },
+         db_function_name: {
+            desc: 'Наименование функции БД, вызываемой из данного веб-элемента',
+            type: 'el-textarea',
+         },
+         db_function_params: {
+            desc: 'Параметры функции db_function_name',
+            type: 'el-textarea',
+         },
+         fields_list: {
+            desc: 'Список полей для хранеия списка заголовков таблицы',
+            type: 'el-textarea',
+         },
+         gui_icon: {
+            desc: 'Наименование ресурса веб-приложения, соответствующего иконке элемента',
+            type: 'el-select',
+         },
+         check_right: {
+            desc: 'Код права, наличие которого у пользователя, разрешает доступ к данному веб-элементу',
+            type: 'el-select',
+         },
       },
+      prop_default: {
+         d_start: null,
+         f_fin: null,
+         d_modif: null,
+         systems_id: null,
+         fullname: null,
+         description: null,
+         group_number: null,
+         db_function_name: null,
+         db_function_params: null,
+         fields_list: null,
+         gui_icon: null,
+         add_params: null,
+         check_right: null,
+      }
    },
    getters: {
       getScreenList(state: any) { return state.screenList},
@@ -72,7 +143,11 @@ export default {
       getBlock(state: any) { return state.block},
       getWebLook(state: any) { return state.weblook },
       getWebEffect(state: any) { return state.webeffect },
-      getCMSlist(state: any) { return state.cmsList}
+      getCMSlist(state: any) { return state.cmsList},
+      getProp(state: any) { return state.prop_default },
+      getPropList(state: any) { return state.prop_type },
+      getSelected(state: any) { return state.selected },
+      getSelectedType(state: any) { return state.selectedType }
    },
    mutations: {
       add2screenList(state: any, payload: any): void {
@@ -85,8 +160,8 @@ export default {
          state.cmsList.splice(payload, 1);
       },
       clearCMSeffect(state: any, payload: any):void {
-         const list = state.cmsList.filter((el: any) => el.effect === payload);
-         for (const item of list) { item.effect = 0; }
+         const index = state.cmsList.findIndex((el: any) => el.id === payload);
+         if (index > -1) {state.cmsList[index].link = false; }
       },
       changeScreenId(state: any, payload: any): void {
          const CMSindex = state.cmsList.findIndex((el: any) => el.id === payload.id);
@@ -116,6 +191,10 @@ export default {
          if( screenIndex != -1) {
             state.screenList[screenIndex].name = state.effect2screen[effect];  
          }      
+      },
+      setSelected(state: any, payload: any) {
+         state.selected = payload.id;
+         state.selectedType = payload.type;
       }
    },
    actions: {
@@ -151,7 +230,7 @@ export default {
             })
             const length = sortById.length
             const lastID = sortById[length-1].id;
-            console.log(lastID);
+            // console.log(lastID);
          } catch (err) {
             console.log(err);
          }

@@ -64,10 +64,7 @@
                      :label="'Переход'"
                      :name="'id'"
                      :selected="linkTo"
-                     @select="$emit('change', {
-                        value: $event,
-                        id: item.id,
-                     }), linkTo = $event"
+                     @select="checkLink($event, item.id)"
                   />
                </div>
             </div>
@@ -136,6 +133,18 @@ export default class CMSElement extends Vue {
          })
       } 
       return result
+   }
+
+   private checkLink(e: any, id: number): void {
+      if (e) {
+         this.$emit('change', {
+            value: e,
+            id: id,
+         })
+         this.linkTo = e;
+      } else {
+         this.linkTo = '';
+      }
    }
 }
 </script>
