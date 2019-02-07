@@ -1,4 +1,5 @@
 import http from './axios';
+import intersect from 'path-intersection';
 
 export default {
    namespaced: true,
@@ -17,13 +18,13 @@ export default {
          }
       ],
       cmsList: new Array(),
-      screen: {
-         type: 'screen',
-         typeName: 'Экран',
-         width: 400,
-         height: 320,
-         active: false,
-      },
+      // screen: {
+      //    type: 'screen',
+      //    typeName: 'Экран',
+      //    width: 400,
+      //    height: 320,
+      //    active: false,
+      // },
       block: {
          type: 'block',
          width: 160,
@@ -135,7 +136,8 @@ export default {
          gui_icon: null,
          add_params: null,
          check_right: null,
-      }
+      },
+      effectLink: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 27],
    },
    getters: {
       getScreenList(state: any) { return state.screenList},
@@ -184,18 +186,86 @@ export default {
       },
       setCMSeffect(state: any, payload: any) {
          const CMSindex = state.cmsList.findIndex((el: any) => el.id == payload.id);
-         state.cmsList[CMSindex].effect = payload.v;
-         const effect = state.cmsList[CMSindex].effect;
-         const screenIndex = state.screenList.findIndex((el: any) => el.id == payload.id);
-         // console.log(screenIndex)
-         if( screenIndex != -1) {
-            state.screenList[screenIndex].name = state.effect2screen[effect];  
-         }      
+         const CMSpath = state.cmsList[CMSindex];
+         CMSpath.effect = payload.v;
+         const parentIndex = state.screenList.findIndex((el: any) => el.id === CMSpath.parent_id);
+         const parentPath = state.screenList[parentIndex];
+         const parent = {
+            X: parentPath.coord[0],
+            Y: parentPath.coord[1],
+            W: parentPath.width,
+            H: parentPath.height,
+         }
+
+         const CMS = {
+            X: CMSpath.coord[0] + parent.X,
+            Y: CMSpath.coord[1] + parent.Y,
+            W: CMSpath.width,
+            H: CMSpath.height,
+         };
+         const CMScenter = {
+            X: CMS.X + (CMS.W /2),
+            Y: CMS.Y + (CMS.H /2),
+         }
+         
+         const path1 = rectConstructor(parent.X, parent.Y, parent.W, parent.H);
+         const path2 = lineConstructor(CMScenter.X, CMScenter.Y, CMScenter.X, CMScenter.Y + 10000);
+
+         let X = ((CMS.X - 200) > 0) ? (CMS.X - 200) : 0;
+         let Y = intersect(path1, path2)[0].y + 100;
+         
+         const effect = CMSpath.effect;
+         const check = state.effectLink.findIndex((el: any) => el === effect);
+
+         const childIndex = state.screenList.findIndex((el: any) => el.id === payload.id);
+
+         if (childIndex != -1) {
+            X = state.screenList[childIndex].coord[0];
+            Y = state.screenList[childIndex].coord[1];
+            clear(payload.id);
+         }
+         
+         if (check != -1) {
+            const newScreen = {
+               type: 'screen',
+               typeName: 'Экран',
+               width: 400,
+               height: 320,
+               active: true,
+               id: payload.id,
+               coord: [X, Y],
+               name: state.effect2screen[effect],
+            }
+            state.screenList.push(newScreen);
+         }
+
+         function rectConstructor(x: number, y: number, w: number, h: number): string {
+            return `M${x},${y}L${x + w},${y}L${x + w},${y + h}L${x},${y + h}Z`;
+         }
+
+         function lineConstructor(x1: number, y1: number, x2: number, y2: number): string {
+            return `M${x1},${y1}L${x2},${y2}`
+         }
+
+         function clear (id: any) {
+            const list = state.cmsList.filter((el: any) => el.parent_id == id);
+            if (list.length > 0) {
+               for (const child of list) {
+                  clear(child.id);
+                  const childIndex = state.cmsList.findIndex((el: any) => el.id == child.id);
+                  state.cmsList.splice(childIndex, 1);
+               }
+            }
+            const newIndex = state.screenList.findIndex((item: any) => item.id == id);
+            if (newIndex !== -1) {
+               state.screenList.splice(newIndex, 1);
+            }
+         }
       },
       setSelected(state: any, payload: any) {
          state.selected = payload.id;
          state.selectedType = payload.type;
-      }
+      },
    },
    actions: {
       asyncGetLook: async (context: any) => {

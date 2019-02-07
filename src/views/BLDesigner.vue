@@ -39,7 +39,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
   computed: {
     ...mapGetters('CMS', {
       weblook: 'getWebLook', 
-      screen: 'getScreen',
+      // screen: 'getScreen',
       block: 'getBlock',
     }),
   },
@@ -61,7 +61,7 @@ export default class UMLDesigner extends Vue {
 
   private get components(): any[] {
     const newArr: any[] = new Array();
-    newArr.push(this.screen);
+    // newArr.push(this.screen);
     for (const item of this.weblook) {
       // console.log(item);
       const newItem = {

@@ -58,7 +58,7 @@
                      }), effect = $event"
                   />
                </div>
-               <div class="layout-item-row" v-if="!item.link && linkAvailable">
+               <!-- <div class="layout-item-row" v-if="!item.link && linkAvailable">
                   <el-select
                      :options="screenList.filter(el => el.id < -1)"
                      :label="'Переход'"
@@ -66,7 +66,7 @@
                      :selected="linkTo"
                      @select="checkLink($event, item.id)"
                   />
-               </div>
+               </div> -->
             </div>
          </div>
       </div>
@@ -115,15 +115,15 @@ export default class CMSElement extends Vue {
    private linkTo: string = '';
    private effectLink: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 27];
 
-   private get linkAvailable(): boolean {
-      let result = false;
-      for (const i of this.effectLink) {
-         if (i == this.effect) {
-            return result = true;
-         }
-      }
-      return result;
-   }
+   // private get linkAvailable(): boolean {
+   //    let result = false;
+   //    for (const i of this.effectLink) {
+   //       if (i == this.effect) {
+   //          return result = true;
+   //       }
+   //    }
+   //    return result;
+   // }
 
    private get effectAvailable(): any[] {
       let result = this.webEffect;
