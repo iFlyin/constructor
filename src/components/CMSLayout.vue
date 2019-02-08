@@ -1,7 +1,6 @@
 <template>
    <div 
       class="layout"
-      @dragover.stop="$event.preventDefault()"
       @drop.stop="drop($event)"
       @click.prevent="select({
          id: 0,
@@ -23,7 +22,7 @@
          @select="select($event)"
          @movement="movement($event)"
          @resize="resize($event)"
-         @drop="dropInside($event)"
+         @drop="drop($event)"
          @change="changeId($event)"
       />
       <!-- {{list}} -->
@@ -81,34 +80,8 @@ export default class LayoutBL extends Vue {
    private deleteScreen!: any;
    private clearEffect!: any;
    private deleteCMS!: any;
-   
-   // private drop(e: any): void {
-   //    // console.log(e);
-   //    let item;
-   //    try {
-   //       item = JSON.parse(e.dataTransfer.getData('screen'));
-   //    } catch (err) {
-   //       console.log(err);
-   //       return;
-   //    }
-   //    const scrollX = this.$el.scrollLeft;
-   //    const scrollY = this.$el.scrollTop;
-   //    item.coord = new Array();
-   //    const centerX = item.width/2;
-   //    const centerY = item.height/2;
-   //    let posX = (e.clientX - this.left) / this.zoom  - centerX;
-   //    if (posX < 0) { posX = 0 }
-   //    let posY = (e.clientY - 30) /this.zoom - centerY;
-   //    if (posY < 0) { posY = 0 }
-   //    item.coord.push(posX + scrollX);
-   //    item.coord.push(posY + scrollY);
-   //    item.id = --this.screenId;
-   //    this.add2screenList(item);
-   //    const focusEl: any = this.$el;
-   //    focusEl.focus();
-   // }
 
-   private dropInside(payload: any): void {
+   private drop(payload: any): void {
       const e: any = payload.event;
       const id: number = payload.id;
       let item;
@@ -130,12 +103,8 @@ export default class LayoutBL extends Vue {
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
       item.props.id = ++this.id;
-      item.parent_id = id;
-      // item.props = new Object();
-      for (const key in this.addProps) {
-         item.props[key] = this.addProps[key];
-      }
-      console.log(item);
+      item.props.parent_id = id;
+      for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
       this.list.push(item);
       const focusEl: any = this.$el;
       focusEl.focus();
@@ -146,7 +115,7 @@ export default class LayoutBL extends Vue {
       const type = this.selectedType;
       let index: any = null;
       const clear = (id: any) => {
-         const list = this.list.filter((el: any) => el.parent_id == id);
+         const list = this.list.filter((el: any) => el.props.parent_id == id);
          if (list.length > 0) {
             for (const child of list) {
                clear(child.props.id);

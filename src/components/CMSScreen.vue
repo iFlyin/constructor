@@ -40,6 +40,7 @@
                </div>   
                <div 
                   class="layout-item-canvas"
+                  @dragover.stop="$event.preventDefault()"
                   @drop.stop="(item.active) ? $emit('drop', {
                      event: $event,
                      id: item.props.id,
@@ -139,7 +140,7 @@ export default class CMSScreen extends Vue {
    private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
 
    private get childsList(): any[] {
-      return this.list.filter(el => el.parent_id == this.item.props.id);
+      return this.list.filter(el => el.props.parent_id == this.item.props.id);
    }
 
    private get childSelected(): boolean {

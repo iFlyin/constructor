@@ -19,16 +19,14 @@
             </div>
             <div 
                class="option-item"
-               v-for="(option, index) of options"
+               v-for="(option, index) of options.sort()"
                :key="index"
                @click="select(option.id)"
             >
-               <!-- {{(option[name] &lt; 0) ? -(option[name]) : option.name}} -->
-               {{option.id}}
+               {{(option[name] &lt; 0) ? -(option[name]) : option.name}}
             </div>
          </div>
       </template>
-      {{console}}
    </div>
 </template>
 
@@ -60,7 +58,6 @@ export default class ElSelect extends Vue{
    private options!: any;
 
    private select(v: any): void {
-      console.log(v);
       this.show = false;
       this.$emit('select', v);
    }
@@ -68,11 +65,6 @@ export default class ElSelect extends Vue{
    private focus(): void {
       const el: any = this.$el;
       el.focus();
-   }
-
-   private get console(): any {
-      console.log(this.options)
-      return
    }
 }
 </script>

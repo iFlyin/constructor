@@ -182,7 +182,7 @@ export default {
          const CMSindex = state.cmsList.findIndex((el: any) => el.props.id == payload.id);
          const CMSpath = state.cmsList[CMSindex];
          CMSpath.effect = payload.v;
-         const parentIndex = state.screenList.findIndex((el: any) => el.props.id === CMSpath.parent_id);
+         const parentIndex = state.screenList.findIndex((el: any) => el.props.id === CMSpath.props.parent_id);
          const parentPath = state.screenList[parentIndex];
          const parent = {
             X: parentPath.coord[0],
@@ -216,7 +216,7 @@ export default {
          if (childIndex != -1) {
             X = state.screenList[childIndex].coord[0];
             Y = state.screenList[childIndex].coord[1];
-            clear(payload.props.id);
+            clear(payload.id);
          }
          
          if (check != -1) {
@@ -242,7 +242,7 @@ export default {
          }
 
          function clear (id: any) {
-            const list = state.cmsList.filter((el: any) => el.parent_id == id);
+            const list = state.cmsList.filter((el: any) => el.props.parent_id == id);
             if (list.length > 0) {
                for (const child of list) {
                   clear(child.props.id);

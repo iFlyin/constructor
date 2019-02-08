@@ -103,28 +103,6 @@ export default class CMSElement extends Vue {
    private setEffect!: any;
    private effect: any = '';
    private linkTo: string = '';
-   private effectLink: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 27];
-
-   // private get linkAvailable(): boolean {
-   //    let result = false;
-   //    for (const i of this.effectLink) {
-   //       if (i == this.effect) {
-   //          return result = true;
-   //       }
-   //    }
-   //    return result;
-   // }
-
-   // private get effectAvailable(): any[] {
-   //    let result = this.webEffect;
-   //    if (this.item.link) {
-   //       return result = this.webEffect.filter((el: any) => {
-   //          return (this.effectLink.findIndex((item: any) => item == el.id) !== -1);
-   //       })
-   //    } 
-   //    console.log(result)
-   //    return result
-   // }
 
    private checkLink(e: any, id: number): void {
       if (e) {
