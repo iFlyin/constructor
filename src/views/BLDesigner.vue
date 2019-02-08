@@ -48,7 +48,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
 
 export default class UMLDesigner extends Vue {
   private LeftWidth: number = 240;
-  private RightWidth: number = 200;
+  private RightWidth: number = 240;
   private FooterHeight: number = 0;
   private windowWidth: number = window.innerWidth;
   private windowHeight: number = window.innerHeight;

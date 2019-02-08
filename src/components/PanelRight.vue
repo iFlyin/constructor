@@ -46,8 +46,8 @@ export default class RightAsidePanel extends Vue {
          const innerWidth = this.innerWidth;
          const X: number = this.innerWidth - e.clientX;
          let emitWidth;
-         if (X < 1) {
-            emitWidth = 1;
+         if (X < 2) {
+            emitWidth = 2;
             that.$emit('resize', emitWidth)
          } else if (X > maxWidth) {
             emitWidth = maxWidth;

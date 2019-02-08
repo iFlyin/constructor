@@ -211,7 +211,7 @@ export default {
          const path1 = rectConstructor(parent.X, parent.Y, parent.W, parent.H);
          const path2 = lineConstructor(CMScenter.X, CMScenter.Y, CMScenter.X, CMScenter.Y + 10000);
 
-         let X = ((CMS.X - 200) > 0) ? (CMS.X - 200) : 0;
+         let X = ((CMScenter.X - 200) > 0) ? (CMScenter.X - 200) : 0;
          let Y = intersect(path1, path2)[0].y + 100;
          
          const effect = CMSpath.effect;
