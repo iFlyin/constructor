@@ -40,7 +40,8 @@ import LayoutBL from '@/components/CMSLayout.vue';
     ...mapGetters('CMS', {
       weblook: 'getWebLook', 
       // screen: 'getScreen',
-      block: 'getBlock',
+      // block: 'getBlock',
+      system_id: 'getSystemID',
     }),
   },
   methods: { ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMS']) },
@@ -58,19 +59,22 @@ export default class UMLDesigner extends Vue {
   private weblook!: any[];
   private screen!: any;
   private block!: any;
+  private system_id!: any;
 
   private get components(): any[] {
     const newArr: any[] = new Array();
     for (const item of this.weblook) {
       const newItem = {
-        type: this.block.type,
-        width: this.block.width,
-        height: this.block.height,
+        type: 'block',
+        width: 160,
+        height: 150,
+        // width: this.block.width,
+        // height: this.block.height,
         typeName: item.name,
         constName: item.const_name,
-        link: false,
         effect: '',
         props: {
+          system_id: this.system_id,
           look: item.id,
         }
       }

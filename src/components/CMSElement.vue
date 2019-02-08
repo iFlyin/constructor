@@ -41,7 +41,6 @@
                      class="layout-item-name" 
                      :contenteditable="editable" 
                      @dblclick="editable = true"
-                     @keyup.delete.stop
                   >
                      {{item.props.name}}
                   </div>

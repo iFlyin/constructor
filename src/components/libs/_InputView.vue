@@ -55,9 +55,6 @@ export default class InputView extends Vue {
          }
       } else return null;
    }
-   // private console() {
-   //    console.log(this.cms);
-   // }
 }
 </script>
 
@@ -66,7 +63,8 @@ export default class InputView extends Vue {
    .input-view {
       display: flex;
       flex-flow: row wrap;
-      align-items: flex-start;
+      justify-content: space-between;
+      align-items: center;
       box-sizing: border-box;
       padding: 5px 20px;
       border: 1px dashed grey;

@@ -4,6 +4,7 @@ import intersect from 'path-intersection';
 export default {
    namespaced: true,
    state: {
+      systems_id: 'New system',
       selected: 0,
       selectedType: 'none',
       screenList: [
@@ -18,11 +19,11 @@ export default {
          }
       ],
       cmsList: new Array(),
-      block: {
-         type: 'block',
-         width: 160,
-         height: 150,
-      },
+      // block: {
+      //    type: 'block',
+      //    width: 160,
+      //    height: 150,
+      // },
       weblook: new Array(),
       webeffect: new Array(),
       effect2screen: {
@@ -119,7 +120,6 @@ export default {
          d_start: null,
          f_fin: null,
          d_modif: null,
-         systems_id: null,
          name: 'Имя компонента',
          fullname: 'Имя компонента',
          description: null,
@@ -143,7 +143,8 @@ export default {
       getProp(state: any) { return state.prop_default },
       getPropList(state: any) { return state.prop_type },
       getSelected(state: any) { return state.selected },
-      getSelectedType(state: any) { return state.selectedType }
+      getSelectedType(state: any) { return state.selectedType },
+      getSystemID (state: any) { return state.systems_id },
    },
    mutations: {
       add2screenList(state: any, payload: any): void {
@@ -155,21 +156,21 @@ export default {
       deleteCMS(state: any, payload: any): void {
          state.cmsList.splice(payload, 1);
       },
-      clearCMSeffect(state: any, payload: any):void {
-         const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
-         if (index > -1) {state.cmsList[index].link = false; }
-      },
+      // clearCMSeffect(state: any, payload: any):void {
+      //    const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
+      //    if (index > -1) {state.cmsList[index].link = false; }
+      // },
       changeScreenId(state: any, payload: any): void {
          const CMSindex = state.cmsList.findIndex((el: any) => el.props.id === payload.id);
          const effect = state.cmsList[CMSindex].effect;
-         state.cmsList[CMSindex].link = true;
+         // state.cmsList[CMSindex].link = true;
 
          if (payload.value != '') {
             const index = state.screenList.findIndex((el: any) => el.props.id === payload.value);
             const screen = state.screenList[index];
             screen.props.id = payload.id;
             screen.name = state.effect2screen[effect];
-            screen.active = true;
+            // screen.active = true;
          }
       },
       saveWebLook(state: any, payload: any) {
