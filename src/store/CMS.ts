@@ -124,7 +124,6 @@ export default {
          add_params: null,
          check_right: null,
       },
-      effectLink: [1, 2, 3, 4, 5, 6, 7, 8, 10, 21, 22, 27],
    },
    getters: {
       getScreenList(state: any) { return state.screenList},
@@ -151,11 +150,11 @@ export default {
       },
       clearCMSeffect(state: any, payload: any):void {
          const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
-         if (index > -1) {state.cmsList[index].effect = ''; }
+         if (index > -1) {state.cmsList[index].props.effect = ''; }
       },
       changeScreenId(state: any, payload: any): void {
          const CMSindex = state.cmsList.findIndex((el: any) => el.props.id === payload.id);
-         const effect = state.cmsList[CMSindex].effect;
+         const effect = state.cmsList[CMSindex].props.effect;
 
          if (payload.value != '') {
             const index = state.screenList.findIndex((el: any) => el.props.id === payload.value);
@@ -173,8 +172,10 @@ export default {
       setCMSeffect(state: any, payload: any) {
          const CMSindex = state.cmsList.findIndex((el: any) => el.props.id == payload.id);
          const CMSpath = state.cmsList[CMSindex];
-         CMSpath.effect = payload.v;
-         const parentIndex = state.screenList.findIndex((el: any) => el.props.id === CMSpath.props.parent_id);
+         CMSpath.props.effect = payload.v;
+         const parentID = CMSpath.props.parent_id;
+         const fixParentID = (parentID) ? parentID : -1; 
+         const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
          const parent = {
             X: parentPath.coord[0],
@@ -200,7 +201,7 @@ export default {
          let X = ((CMScenter.X - 200) > 0) ? (CMScenter.X - 200) : 0;
          let Y = intersect(path1, path2)[0].y + 100;
          
-         const effect = CMSpath.effect;
+         const effect = CMSpath.props.effect;
          const check = state.effect2screen.hasOwnProperty(effect);
 
          const childIndex = state.screenList.findIndex((el: any) => el.props.id === payload.id);

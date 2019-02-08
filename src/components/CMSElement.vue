@@ -48,7 +48,7 @@
                <div class="layout-item-row">
                   <el-select 
                      :options="webEffect"
-                     :selected="item.effect"
+                     :selected="item.props.effect"
                      :label="'Эффект'"
                      :name="'name'"
                      @select="setEffect({

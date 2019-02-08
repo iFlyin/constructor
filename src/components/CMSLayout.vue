@@ -80,6 +80,7 @@ export default class LayoutBL extends Vue {
    private deleteScreen!: any;
    private clearEffect!: any;
    private deleteCMS!: any;
+   private select!: any;
 
    private drop(payload: any): void {
       const e: any = payload.event;
@@ -103,7 +104,7 @@ export default class LayoutBL extends Vue {
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
       item.props.id = ++this.id;
-      item.props.parent_id = id;
+      item.props.parent_id = (id === -1) ? '': id;
       for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
       this.list.push(item);
       const focusEl: any = this.$el;
@@ -140,6 +141,10 @@ export default class LayoutBL extends Vue {
             console.log('ошибка');
          }
       }
+      this.select({
+         id: 0,
+         type: 'none',
+      });
    }
 
    private movement(payload: any): void {
@@ -249,12 +254,6 @@ export default class LayoutBL extends Vue {
             }
          }
       }
-   }
-
-   private change(e: any): void {
-      console.log(e);
-      const index = this.list.findIndex(el => el.props.id == e.id);
-      this.list[index].effect = e.value;
    }
 }
 </script>

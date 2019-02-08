@@ -71,10 +71,10 @@ export default class UMLDesigner extends Vue {
     
         typeName: item.name,
         constName: item.const_name,
-        effect: '',
         props: {
           systems_id: this.system_id,
           look: item.id,
+          effect: '',
         }
       }
       newArr.push(newItem);

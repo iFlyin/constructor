@@ -37,6 +37,7 @@
                   })"
                >
                   {{ (item.props.id &lt; 0) ? -(item.props.id) : '' }} {{item.name || 'Пустой экран'}}
+                  <!-- {{svg}} -->
                </div>   
                <div 
                   class="layout-item-canvas"
@@ -54,7 +55,6 @@
                      :list="list"
                      :screenList="screenList"
                      @select="$emit('select', $event)"
-                     @resize="resize($event)"
                      @movement="movement($event)"
                      @change="$emit('change', $event)"
                   />
@@ -62,7 +62,7 @@
             </div>  
          </div>
       </div>
-      <div class="svg-wrapper">
+      <div class="svg-wrapper" @resize="console(e)">
          <svg 
             xmlns="http://www.w3.org/2000/svg"
             width="100%"
@@ -70,6 +70,7 @@
             :style="{
                position: 'relative',
                'z-index': 1000,
+               overflow: 'visible'
             }"
             class="svg"
          >
@@ -130,6 +131,11 @@ export default class CMSScreen extends Vue {
    private item!: any;
    private list!: any[];
    private screenList!: any[];
+   // private el: any = window.document.querySelector('.svg-wrapper');
+   // private svg: any = {
+   //    w: this.el.scrollWidth,
+   //    h: this.el.scrollHeight,
+   // }
    
    private get X(): number { return this.item.coord[0]; }
    private get Y(): number { return this.item.coord[1]; }
@@ -140,7 +146,9 @@ export default class CMSScreen extends Vue {
    private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
 
    private get childsList(): any[] {
-      return this.list.filter(el => el.props.parent_id == this.item.props.id);
+      const screen = this.item.props.id;
+      const fixId = (screen === - 1) ? '' : screen;
+      return this.list.filter(el => el.props.parent_id == fixId);
    }
 
    private get childSelected(): boolean {
@@ -210,10 +218,6 @@ export default class CMSScreen extends Vue {
    private lineConstructor(x1: number, y1: number, x2: number, y2: number): string {
       return `M${x1},${y1}L${x2},${y2}`
    }
-
-   private console(): void{
-      console.log(this);
-   }
 }
 </script>
 
@@ -276,8 +280,8 @@ export default class CMSScreen extends Vue {
       position: absolute;
       top: 0;
       left: 0;
-      width: 99%;
-      height: 99%;
+      width: 100%;
+      height: calc(100% - 3px);
    }
 
 </style>
