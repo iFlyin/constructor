@@ -1,5 +1,5 @@
 <template>
-   <input type="text" :disabled="!val" :value="val">
+   <input type="text" :disabled="!val" :value="val" @change="$emit('change', $event.target.value)">
 </template>
 
 <script lang="ts">

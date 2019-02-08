@@ -19,11 +19,6 @@ export default {
          }
       ],
       cmsList: new Array(),
-      // block: {
-      //    type: 'block',
-      //    width: 160,
-      //    height: 150,
-      // },
       weblook: new Array(),
       webeffect: new Array(),
       effect2screen: {
@@ -31,16 +26,14 @@ export default {
          2: 'Экран с фильтрами',
          3: 'Экран с параметрами',
          4: 'Экран с задачами',
-         5: 'Экран типа таблица-таблица',
-         6: 'Экран типа дерево-мемо',
-         7: 'Экран типа таблица-поля',
-         8: 'Экран типа таблица-мемо',
-         9: 'Переход в другое приложение',
-         10: 'Экран статичная страница',
-         19: 'Экран СMS ID',
-         21: 'Экран типа дерево-поля',
-         22: 'Экран поиска документов',
-         27: 'Экран с фильтрами и сводными документами',
+         5: 'Экран мастер-деталь',
+         6: 'Экран таблица-мемо',
+         7: 'Экран таблица-поля',
+         8: 'Экран таблица-мемо',
+         10: 'Статичная страница',
+         21: 'Экран дерево-поля ',
+         22: 'Экран поиска документа',
+         27: 'Экран просмотра документа',
       },
       prop_type: {
          systems_id: {
@@ -131,7 +124,7 @@ export default {
          add_params: null,
          check_right: null,
       },
-      effectLink: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 27],
+      effectLink: [1, 2, 3, 4, 5, 6, 7, 8, 10, 21, 22, 27],
    },
    getters: {
       getScreenList(state: any) { return state.screenList},
@@ -156,21 +149,19 @@ export default {
       deleteCMS(state: any, payload: any): void {
          state.cmsList.splice(payload, 1);
       },
-      // clearCMSeffect(state: any, payload: any):void {
-      //    const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
-      //    if (index > -1) {state.cmsList[index].link = false; }
-      // },
+      clearCMSeffect(state: any, payload: any):void {
+         const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
+         if (index > -1) {state.cmsList[index].effect = ''; }
+      },
       changeScreenId(state: any, payload: any): void {
          const CMSindex = state.cmsList.findIndex((el: any) => el.props.id === payload.id);
          const effect = state.cmsList[CMSindex].effect;
-         // state.cmsList[CMSindex].link = true;
 
          if (payload.value != '') {
             const index = state.screenList.findIndex((el: any) => el.props.id === payload.value);
             const screen = state.screenList[index];
             screen.props.id = payload.id;
             screen.name = state.effect2screen[effect];
-            // screen.active = true;
          }
       },
       saveWebLook(state: any, payload: any) {
@@ -210,7 +201,7 @@ export default {
          let Y = intersect(path1, path2)[0].y + 100;
          
          const effect = CMSpath.effect;
-         const check = state.effectLink.findIndex((el: any) => el === effect);
+         const check = state.effect2screen.hasOwnProperty(effect);
 
          const childIndex = state.screenList.findIndex((el: any) => el.props.id === payload.id);
 
@@ -220,10 +211,10 @@ export default {
             clear(payload.id);
          }
          
-         if (check != -1) {
+         if (check) {
             const newScreen = {
                type: 'screen',
-               typeName: 'Экран',
+               // typeName: 'Экран',
                width: 400,
                height: 320,
                active: true,
@@ -260,7 +251,16 @@ export default {
       setSelected(state: any, payload: any) {
          state.selected = payload.id;
          state.selectedType = payload.type;
+         // const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
+         // console.log(state.cmsList[index]);
       },
+      setValue(state: any, payload: any) {
+         const key = payload.key;
+         const value = payload.v;
+         const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
+         const cms = state.cmsList[index];
+         cms[key] = value;
+      }
    },
    actions: {
       asyncGetLook: async (context: any) => {

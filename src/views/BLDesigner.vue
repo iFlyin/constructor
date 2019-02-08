@@ -68,13 +68,12 @@ export default class UMLDesigner extends Vue {
         type: 'block',
         width: 160,
         height: 150,
-        // width: this.block.width,
-        // height: this.block.height,
+    
         typeName: item.name,
         constName: item.const_name,
         effect: '',
         props: {
-          system_id: this.system_id,
+          systems_id: this.system_id,
           look: item.id,
         }
       }

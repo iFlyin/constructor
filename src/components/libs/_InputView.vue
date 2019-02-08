@@ -1,12 +1,17 @@
 <template>
    <div class="input-view">
       <label class="input-label">{{label}}: </label>
-      <components class="input" :is="component" :val="value"/>
+      <components class="input" :is="component" :val="value" @change="setValue({
+         id: cms.props.id,
+         key: label,
+         v: $event,
+      })"/>
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { mapMutations }from 'vuex';
 import ElReadonly from './ReadOnly.vue';
 import ElInput from './Input.vue';
 import ElInputNumber from './InputNumber.vue';
@@ -15,14 +20,7 @@ import ElDatepicker from './DatePicker.vue';
 import ElSelect from './ElSelect.vue';
 
 @Component({
-   components: {
-      ElReadonly,
-      ElInput,
-      ElTextarea,
-      ElDatepicker,
-      ElSelect,
-      ElInputNumber,
-   },
+   components: { ElReadonly, ElInput, ElTextarea, ElDatepicker, ElSelect, ElInputNumber },
    props: {
       label: {
          type: String,
@@ -40,7 +38,8 @@ import ElSelect from './ElSelect.vue';
          type: Object,
          required: true,
       }
-   }
+   }, 
+   methods: {...mapMutations('CMS',{ setValue: 'setValue'})},
 })
 export default class InputView extends Vue {
    private label!: 'string';
@@ -54,6 +53,10 @@ export default class InputView extends Vue {
             return this.cms.props[this.label];
          }
       } else return null;
+   }
+
+   private console(v: any) {
+      console.log(`${this.label} ${v}`);
    }
 }
 </script>
