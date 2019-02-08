@@ -4,7 +4,7 @@
          class="layout-item"
          :style="{
             'z-index': (childSelected) 
-               ? '1000000' : (item.id == selected)
+               ? '1000000' : (item.props.id == selected)
                ? '1111' : '',
             left: (item.coord[0]) + 'px',
             top: item.coord[1] + 'px',
@@ -15,15 +15,15 @@
             'border-style': (item.active) ? 'solid' : 'dashed'
          }"
          @click.stop.prevent="$emit('select', {
-            id: item.id,
+            id: item.props.id,
             type: 'Screen'
          })"
       >
          <div class="layout-item-wrapper">
             <screen-resize 
-               v-if="item.id == selected"
+               v-if="item.props.id == selected"
                :zoom="zoom"
-               :id="item.id"
+               :id="item.props.id"
                @resize="$emit('resize', $event)"
             />
             <div class="layout-item-content">
@@ -32,17 +32,17 @@
                   @drop.stop
                   @mousedown.stop.prevent="$emit('movement', {
                      event: $event,
-                     id: item.id,
+                     id: item.props.id,
                      type: 'screen',
                   })"
                >
-                  {{ (item.id &lt; 0) ? -(item.id) : '' }} {{item.name || 'Пустой экран'}}
+                  {{ (item.props.id &lt; 0) ? -(item.props.id) : '' }} {{item.name || 'Пустой экран'}}
                </div>   
                <div 
                   class="layout-item-canvas"
                   @drop.stop="(item.active) ? $emit('drop', {
                      event: $event,
-                     id: item.id,
+                     id: item.props.id,
                   }) : ''"
                   @mousedown.stop.prevent
                >  
@@ -139,7 +139,7 @@ export default class CMSScreen extends Vue {
    private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
 
    private get childsList(): any[] {
-      return this.list.filter(el => el.parent_id == this.item.id);
+      return this.list.filter(el => el.parent_id == this.item.props.id);
    }
 
    private get childSelected(): boolean {
@@ -148,7 +148,7 @@ export default class CMSScreen extends Vue {
       //    return result = true;
       // }
       for (const child of this.childsList) {
-         if (child.id == this.selected) {
+         if (child.props.id == this.selected) {
             return result = true;
          }
       }
@@ -159,16 +159,16 @@ export default class CMSScreen extends Vue {
       const availableScreen = this.screenList.filter(el => el.active === true);  
       const childWithEffect = this.childsList.filter(el => {
          for (const screen of availableScreen) {
-            if (el.id == screen.id) { return true }
+            if (el.props.id == screen.props.id) { return true }
          }
       });
       const lines: any = new Array();
       for (const obj of childWithEffect) {
-         const name = "id" + obj.id;
+         const name = "id" + obj.props.id;
          const arr = new Array();
          const startX = obj.coord[0] + (obj.width / 2) + this.X;
          const startY = obj.coord[1] + (obj.height / 2) + this.Y + 40;
-         const targetInd = availableScreen.findIndex(el => el.id == obj.id);
+         const targetInd = availableScreen.findIndex(el => el.props.id == obj.props.id);
          const targetObj = availableScreen[targetInd];
          const targetX = targetObj.coord[0] - 10;
          const targetY = targetObj.coord[1] - 10;

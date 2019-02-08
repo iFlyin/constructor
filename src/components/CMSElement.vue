@@ -1,9 +1,9 @@
 <template>
    <div
       class="layout-item"
-      :class="{'layout-item-active': selected == item.id}"
+      :class="{'layout-item-active': selected == item.props.id}"
       :style="{
-         'z-index': (item.id == selected) ? '1000000' : '',
+         'z-index': (item.props.id == selected) ? '1000000' : '',
          left: (item.coord[0]) + 'px',
          top: item.coord[1] + 'px',
          width: item.width + 'px',
@@ -11,7 +11,7 @@
          'border-width': 2 / zoom + 'px',
       }"
       @click.stop.prevent="$emit('select', {
-         id: item.id,
+         id: item.props.id,
          type: 'CMS',
       })"
    >
@@ -22,7 +22,7 @@
                @drop.stop
                @mousedown.stop.prevent="$emit('movement', {
                   event: $event,
-                  id: item.id,
+                  id: item.props.id,
                })"
             >
                {{item.typeName}}
@@ -31,12 +31,12 @@
                class="layout-item-canvas"
                @drop.stop="$emit('drop', {
                   event: $event,
-                  id: item.id,
+                  id: item.props.id,
                })"
                @mousedown.stop
             >
                <div class="layout-item-row">
-                  <div class="layout-item-id">{{item.id}}</div>
+                  <div class="layout-item-id">{{item.props.id}}</div>
                   <div 
                      class="layout-item-name" 
                      :contenteditable="editable" 
@@ -48,13 +48,13 @@
                </div>
                <div class="layout-item-row">
                   <el-select 
-                     :options="effectAvailable"
+                     :options="webEffect"
                      :selected="item.effect"
                      :label="'Эффект'"
                      :name="'name'"
                      @select="setEffect({
                         v: $event,
-                        id: item.id,
+                        id: item.props.id,
                      }), effect = $event"
                   />
                </div>
@@ -115,15 +115,16 @@ export default class CMSElement extends Vue {
    //    return result;
    // }
 
-   private get effectAvailable(): any[] {
-      let result = this.webEffect;
-      if (this.item.link) {
-         return result = this.webEffect.filter((el: any) => {
-            return (this.effectLink.findIndex((item: any) => item == el.id) !== -1);
-         })
-      } 
-      return result
-   }
+   // private get effectAvailable(): any[] {
+   //    let result = this.webEffect;
+   //    if (this.item.link) {
+   //       return result = this.webEffect.filter((el: any) => {
+   //          return (this.effectLink.findIndex((item: any) => item == el.id) !== -1);
+   //       })
+   //    } 
+   //    console.log(result)
+   //    return result
+   // }
 
    private checkLink(e: any, id: number): void {
       if (e) {

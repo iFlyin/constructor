@@ -47,7 +47,7 @@ export default class InputView extends Vue {
    private cms!: any; 
 
    private get value(): any {
-      if (this.cms.id) {
+      if (this.cms.props.id) {
          if(this.cms.hasOwnProperty(this.label)) {
             return this.cms[this.label];
          } else {
@@ -65,7 +65,7 @@ export default class InputView extends Vue {
 <style lang="scss" scoped>
    .input-view {
       display: flex;
-      flex-flow: column nowrap;
+      flex-flow: row wrap;
       align-items: flex-start;
       box-sizing: border-box;
       padding: 5px 20px;
@@ -79,7 +79,8 @@ export default class InputView extends Vue {
    }
 
    .input {
-      width: 160px;
+      box-sizing: border-box;
+      padding: 5px 0;
    }
 
 </style>

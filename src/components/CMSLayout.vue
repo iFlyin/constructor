@@ -129,12 +129,13 @@ export default class LayoutBL extends Vue {
       if (posY < 0) { posY = 0 }
       item.coord.push(posX + scrollX);
       item.coord.push(posY + scrollY);
-      item.id = ++this.id;
+      item.props.id = ++this.id;
       item.parent_id = id;
-      item.props = new Object();
+      // item.props = new Object();
       for (const key in this.addProps) {
          item.props[key] = this.addProps[key];
       }
+      console.log(item);
       this.list.push(item);
       const focusEl: any = this.$el;
       focusEl.focus();
@@ -148,12 +149,12 @@ export default class LayoutBL extends Vue {
          const list = this.list.filter((el: any) => el.parent_id == id);
          if (list.length > 0) {
             for (const child of list) {
-               clear(child.id);
-               const childIndex = this.list.findIndex((el: any) => el.id == child.id);
+               clear(child.props.id);
+               const childIndex = this.list.findIndex((el: any) => el.props.id == child.props.id);
                this.deleteCMS(childIndex);
             }
          }
-         const newIndex = this.screenList.findIndex(item => item.id == id);
+         const newIndex = this.screenList.findIndex(item => item.props.id == id);
          if (newIndex !== -1) {
             this.deleteScreen(newIndex);
          }
@@ -163,7 +164,7 @@ export default class LayoutBL extends Vue {
             this.clearEffect(selected);
             clear(selected);
          } else if (type === 'CMS') {
-            index = this.list.findIndex((el: any) => el.id == selected);
+            index = this.list.findIndex((el: any) => el.props.id == selected);
             clear(selected);
             this.deleteCMS(index);
          } else {
@@ -185,7 +186,7 @@ export default class LayoutBL extends Vue {
       const id = payload.id;
       const scrollX = this.$el.scrollLeft;
       const scrollY = this.$el.scrollTop;
-      const index = arr.findIndex(item => item.id == id);
+      const index = arr.findIndex(item => item.props.id == id);
       let x: number;
       let y: number;
       const that = this;
@@ -220,7 +221,7 @@ export default class LayoutBL extends Vue {
       const id: number = payload.id;
       const direction: string[] = payload.direction
       const that = this;
-      const index = this.screenList.findIndex(item => item.id == id);
+      const index = this.screenList.findIndex(item => item.props.id == id);
       const scrollX = that.$el.scrollLeft;
       const scrollY = that.$el.scrollTop;
 
@@ -283,7 +284,7 @@ export default class LayoutBL extends Vue {
 
    private change(e: any): void {
       console.log(e);
-      const index = this.list.findIndex(el => el.id == e.id);
+      const index = this.list.findIndex(el => el.props.id == e.id);
       this.list[index].effect = e.value;
    }
 }

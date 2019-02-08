@@ -12,7 +12,7 @@ export default {
             name: 'Главный экран',
             width: 400,
             height: 320,
-            id: -1,
+            props: { id: -1 },
             coord: [40, 40],
             active: true,
          }
@@ -156,18 +156,18 @@ export default {
          state.cmsList.splice(payload, 1);
       },
       clearCMSeffect(state: any, payload: any):void {
-         const index = state.cmsList.findIndex((el: any) => el.id === payload);
+         const index = state.cmsList.findIndex((el: any) => el.props.id === payload);
          if (index > -1) {state.cmsList[index].link = false; }
       },
       changeScreenId(state: any, payload: any): void {
-         const CMSindex = state.cmsList.findIndex((el: any) => el.id === payload.id);
+         const CMSindex = state.cmsList.findIndex((el: any) => el.props.id === payload.id);
          const effect = state.cmsList[CMSindex].effect;
          state.cmsList[CMSindex].link = true;
 
          if (payload.value != '') {
-            const index = state.screenList.findIndex((el: any) => el.id === payload.value);
+            const index = state.screenList.findIndex((el: any) => el.props.id === payload.value);
             const screen = state.screenList[index];
-            screen.id = payload.id;
+            screen.props.id = payload.id;
             screen.name = state.effect2screen[effect];
             screen.active = true;
          }
@@ -179,10 +179,10 @@ export default {
          state.webeffect = payload;
       },
       setCMSeffect(state: any, payload: any) {
-         const CMSindex = state.cmsList.findIndex((el: any) => el.id == payload.id);
+         const CMSindex = state.cmsList.findIndex((el: any) => el.props.id == payload.id);
          const CMSpath = state.cmsList[CMSindex];
          CMSpath.effect = payload.v;
-         const parentIndex = state.screenList.findIndex((el: any) => el.id === CMSpath.parent_id);
+         const parentIndex = state.screenList.findIndex((el: any) => el.props.id === CMSpath.parent_id);
          const parentPath = state.screenList[parentIndex];
          const parent = {
             X: parentPath.coord[0],
@@ -211,12 +211,12 @@ export default {
          const effect = CMSpath.effect;
          const check = state.effectLink.findIndex((el: any) => el === effect);
 
-         const childIndex = state.screenList.findIndex((el: any) => el.id === payload.id);
+         const childIndex = state.screenList.findIndex((el: any) => el.props.id === payload.id);
 
          if (childIndex != -1) {
             X = state.screenList[childIndex].coord[0];
             Y = state.screenList[childIndex].coord[1];
-            clear(payload.id);
+            clear(payload.props.id);
          }
          
          if (check != -1) {
@@ -226,7 +226,7 @@ export default {
                width: 400,
                height: 320,
                active: true,
-               id: payload.id,
+               props: { id: payload.id },
                coord: [X, Y],
                name: state.effect2screen[effect],
             }
@@ -245,12 +245,12 @@ export default {
             const list = state.cmsList.filter((el: any) => el.parent_id == id);
             if (list.length > 0) {
                for (const child of list) {
-                  clear(child.id);
-                  const childIndex = state.cmsList.findIndex((el: any) => el.id == child.id);
+                  clear(child.props.id);
+                  const childIndex = state.cmsList.findIndex((el: any) => el.props.id == child.id);
                   state.cmsList.splice(childIndex, 1);
                }
             }
-            const newIndex = state.screenList.findIndex((item: any) => item.id == id);
+            const newIndex = state.screenList.findIndex((item: any) => item.props.id == id);
             if (newIndex !== -1) {
                state.screenList.splice(newIndex, 1);
             }

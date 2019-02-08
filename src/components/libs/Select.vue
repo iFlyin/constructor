@@ -23,10 +23,12 @@
                :key="index"
                @click="select(option.id)"
             >
-               {{(option[name] &lt; 0) ? -(option[name]) : option.name}}
+               <!-- {{(option[name] &lt; 0) ? -(option[name]) : option.name}} -->
+               {{option.id}}
             </div>
          </div>
       </template>
+      {{console}}
    </div>
 </template>
 
@@ -55,8 +57,10 @@ import {Vue, Component} from 'vue-property-decorator';
 export default class ElSelect extends Vue{
    private show: boolean = false;
    private selected!: any;
+   private options!: any;
 
    private select(v: any): void {
+      console.log(v);
       this.show = false;
       this.$emit('select', v);
    }
@@ -64,6 +68,11 @@ export default class ElSelect extends Vue{
    private focus(): void {
       const el: any = this.$el;
       el.focus();
+   }
+
+   private get console(): any {
+      console.log(this.options)
+      return
    }
 }
 </script>
