@@ -19,7 +19,7 @@
             </div>
             <div 
                class="option-item"
-               v-for="(option, index) of options.sort()"
+               v-for="(option, index) of options"
                :key="index"
                @click="select(option.id)"
             >

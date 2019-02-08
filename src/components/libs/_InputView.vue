@@ -47,7 +47,7 @@ export default class InputView extends Vue {
    private cms!: any; 
 
    private get value(): any {
-      if (this.cms.props.id) {
+      if (this.cms.props) {
          if(this.cms.hasOwnProperty(this.label)) {
             return this.cms[this.label];
          } else {

@@ -33,7 +33,7 @@ export default class CMSform extends Vue {
       const type: string = this.checkSelected;
       const id: number = this.selected;
       if (type === 'CMS') {
-         const index = this.cmsList.findIndex((el: any) => el.id === id);
+         const index = this.cmsList.findIndex((el: any) => el.props.id === id);
          return this.cmsList[index];
       } else {
          return {};

@@ -12,7 +12,7 @@
          :style="{ right: (width - 5) + 'px' }"
          @mousedown.prevent="resize()"
       />
-      <!-- <cms-form/> -->
+      <cms-form/>
    </div>
 </template>
 
