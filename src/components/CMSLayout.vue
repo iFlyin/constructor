@@ -82,31 +82,31 @@ export default class LayoutBL extends Vue {
    private clearEffect!: any;
    private deleteCMS!: any;
    
-   private drop(e: any): void {
-      // console.log(e);
-      let item;
-      try {
-         item = JSON.parse(e.dataTransfer.getData('screen'));
-      } catch (err) {
-         console.log(err);
-         return;
-      }
-      const scrollX = this.$el.scrollLeft;
-      const scrollY = this.$el.scrollTop;
-      item.coord = new Array();
-      const centerX = item.width/2;
-      const centerY = item.height/2;
-      let posX = (e.clientX - this.left) / this.zoom  - centerX;
-      if (posX < 0) { posX = 0 }
-      let posY = (e.clientY - 30) /this.zoom - centerY;
-      if (posY < 0) { posY = 0 }
-      item.coord.push(posX + scrollX);
-      item.coord.push(posY + scrollY);
-      item.id = --this.screenId;
-      this.add2screenList(item);
-      const focusEl: any = this.$el;
-      focusEl.focus();
-   }
+   // private drop(e: any): void {
+   //    // console.log(e);
+   //    let item;
+   //    try {
+   //       item = JSON.parse(e.dataTransfer.getData('screen'));
+   //    } catch (err) {
+   //       console.log(err);
+   //       return;
+   //    }
+   //    const scrollX = this.$el.scrollLeft;
+   //    const scrollY = this.$el.scrollTop;
+   //    item.coord = new Array();
+   //    const centerX = item.width/2;
+   //    const centerY = item.height/2;
+   //    let posX = (e.clientX - this.left) / this.zoom  - centerX;
+   //    if (posX < 0) { posX = 0 }
+   //    let posY = (e.clientY - 30) /this.zoom - centerY;
+   //    if (posY < 0) { posY = 0 }
+   //    item.coord.push(posX + scrollX);
+   //    item.coord.push(posY + scrollY);
+   //    item.id = --this.screenId;
+   //    this.add2screenList(item);
+   //    const focusEl: any = this.$el;
+   //    focusEl.focus();
+   // }
 
    private dropInside(payload: any): void {
       const e: any = payload.event;
@@ -139,14 +139,6 @@ export default class LayoutBL extends Vue {
       const focusEl: any = this.$el;
       focusEl.focus();
    }
-
-   // private select(e: any): void {
-   //    // const id: number = e.id;
-   //    // this.selected = id;
-   //    // this.selectedType = e.type;
-   //    // const focusEl: any = this.$el;
-   //    // focusEl.focus();
-   // }
 
    private del(): void {
       const selected = this.selected;

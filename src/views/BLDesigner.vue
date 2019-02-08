@@ -61,20 +61,18 @@ export default class UMLDesigner extends Vue {
 
   private get components(): any[] {
     const newArr: any[] = new Array();
-    // newArr.push(this.screen);
     for (const item of this.weblook) {
-      // console.log(item);
       const newItem = {
         type: this.block.type,
         width: this.block.width,
         height: this.block.height,
         typeName: item.name,
-        look: item.id,
-        effect: '',
         constName: item.const_name,
-        name: 'Имя компонента',
-        fullname: 'Имя компонента',
         link: false,
+        effect: '',
+        props: {
+          look: item.id,
+        }
       }
       newArr.push(newItem);
     }

@@ -43,7 +43,7 @@
                      @dblclick="editable = true"
                      @keyup.delete.stop
                   >
-                     {{item.name}}
+                     {{item.props.name}}
                   </div>
                </div>
                <div class="layout-item-row">
@@ -58,15 +58,6 @@
                      }), effect = $event"
                   />
                </div>
-               <!-- <div class="layout-item-row" v-if="!item.link && linkAvailable">
-                  <el-select
-                     :options="screenList.filter(el => el.id < -1)"
-                     :label="'Переход'"
-                     :name="'id'"
-                     :selected="linkTo"
-                     @select="checkLink($event, item.id)"
-                  />
-               </div> -->
             </div>
          </div>
       </div>
@@ -90,10 +81,6 @@ import ElSelect from '@/components/libs/Select.vue';
          type: Number,
          required: true,
       },
-      selected: {
-         type: Number,
-         required: true,
-      },
       list: {
          type: Array,
          required: true,
@@ -103,7 +90,10 @@ import ElSelect from '@/components/libs/Select.vue';
          required: true,
       }
    },
-   computed: {...mapGetters('CMS', {webEffect: 'getWebEffect'})},
+   computed: {...mapGetters('CMS', {
+      webEffect: 'getWebEffect',
+      selected: 'getSelected',
+   })},
    methods: {...mapMutations('CMS', {setEffect: 'setCMSeffect'})}
 })
 export default class CMSElement extends Vue {

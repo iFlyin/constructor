@@ -18,13 +18,6 @@ export default {
          }
       ],
       cmsList: new Array(),
-      // screen: {
-      //    type: 'screen',
-      //    typeName: 'Экран',
-      //    width: 400,
-      //    height: 320,
-      //    active: false,
-      // },
       block: {
          type: 'block',
          width: 160,
@@ -127,7 +120,8 @@ export default {
          f_fin: null,
          d_modif: null,
          systems_id: null,
-         fullname: null,
+         name: 'Имя компонента',
+         fullname: 'Имя компонента',
          description: null,
          group_number: null,
          db_function_name: null,
@@ -271,7 +265,6 @@ export default {
       asyncGetLook: async (context: any) => {
          try { 
             const {data} = await http.get('get/get_web_look_from_manual?manual=web_look');
-            // console.log({data})
             context.commit('saveWebLook', data);
          } catch(err) {
             console.log(err);
@@ -280,7 +273,6 @@ export default {
       asyncGetEffect: async (context: any) => {
          try {
             const {data} = await http.get('get/get_web_effect_from_manual?manual=web_effect');
-            // console.log({data});
             context.commit('saveWebEffect', data);
          } catch (err) {
             console.log(err);

@@ -50,7 +50,6 @@
                      v-for="(component, id) of childsList" :key="id"
                      :item="component"
                      :zoom="zoom"
-                     :selected="selected"
                      :list="list"
                      :screenList="screenList"
                      @select="$emit('select', $event)"
