@@ -118,7 +118,8 @@ export default class ElSelect extends Vue{
       overflow-x: hidden;
       overflow-y: auto;
       background-color: snow;
-      outline: 2px solid grey;
+      outline: 2px solid #2c3e50;
+      color: #2c3e50;
    }
 
    .option-item {
@@ -127,7 +128,8 @@ export default class ElSelect extends Vue{
       text-align: left;
 
       &:hover {
-         background-color: #b3b3b3;
+         background-color: #2c3e50;
+         color: #fff;
       }
    }
 

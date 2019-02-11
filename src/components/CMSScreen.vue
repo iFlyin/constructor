@@ -11,7 +11,7 @@
             width: item.width + 'px',
             height: item.height + 'px',
             'border-width': 2 / zoom + 'px',
-            'border-color': (item.active) ? 'black' : 'grey',
+            'border-color': (item.active) ? '#2c3e50' : 'grey',
             'border-style': (item.active) ? 'solid' : 'dashed'
          }"
          @click.stop.prevent="$emit('select', {
@@ -70,7 +70,7 @@
             :style="{
                position: 'relative',
                'z-index': 1000,
-               overflow: 'visible'
+               overflow: 'visible',
             }"
             class="svg"
          >
@@ -78,15 +78,15 @@
                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
                  <polygon 
                      :points="`0 0, ${10 * zoom} 3.5, 0 7`"
-                     fill="red"
+                     fill="#2c3e50"
                  />
                </marker>
             </defs>
             <path
                v-for="(line, index) of lines" :key="index"
                :d="line"
-               stroke="black"
-               :stroke-width="1 / zoom"
+               :stroke="(item.props.id == selected) ? 'red' : '#2c3e50'"
+               :stroke-width="1.2 / zoom"
                marker-end="url(#arrowhead)"
             />
          </svg>
@@ -224,7 +224,7 @@ export default class CMSScreen extends Vue {
 <style lang="scss" scoped>
    .layout-item {
       border-style: solid;
-      border-color: black;
+      border-color: #2c3e50;
       box-sizing: border-box;
       z-index: 1001;
       position: absolute;
@@ -234,15 +234,6 @@ export default class CMSScreen extends Vue {
          height: 100%;
          // background: #fff;
          position: relative;
-      }
-
-      &-resizer {
-         height: 100%;
-         width: 100%;
-         outline: 2px solid red;
-         position: absolute;
-         top: 0;
-         left: 0;
       }
       
       &-content {
@@ -260,13 +251,14 @@ export default class CMSScreen extends Vue {
          padding: 10px;
          width: 100%;
          box-sizing: border-box;
-         border-bottom: 1px solid black;
+         border-bottom: 1px solid #2c3e50;
          display: flex;
          justify-content: center;
          align-items: center;
          user-select: none;
          cursor: move;
-         background-color: #fff;;
+         background-color: #2c3e50;
+         color: #fff;
       }
 
       &-canvas {
@@ -281,7 +273,7 @@ export default class CMSScreen extends Vue {
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100% - 3px);
+      height: 99%;
    }
 
 </style>

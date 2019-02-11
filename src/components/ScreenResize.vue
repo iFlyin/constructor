@@ -1,5 +1,7 @@
 <template>
-   <div class="layout-item-resizer">
+   <div class="layout-item-resizer" :style="{
+      'outline-width' : 2 / zoom + 'px',
+   }">
       <button 
          class="resizer-grid resizer-top-left" 
          @mousedown.stop="$emit('resize', {
@@ -147,9 +149,18 @@ export default class SelectResize extends Vue {
          background: transparent;
          
          &:hover {
-            border-color: red;
+            // border-color: red;
          }
       }
+   }
+
+   .layout-item-resizer {
+      height: 100%;
+      width: 100%;
+      outline: 2px solid red;
+      position: absolute;
+      top: 0;
+      left: 0;
    }
 </style>
 

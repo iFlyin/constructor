@@ -1,7 +1,7 @@
 <template>
    <div
-      class="layout-item"
-      :class="{'layout-item-active': selected == item.props.id}"
+      class="layout-cms"
+      :class="{'layout-cms-active': selected == item.props.id}"
       :style="{
          'z-index': (item.props.id == selected) ? '1000000' : '',
          left: (item.coord[0]) + 'px',
@@ -15,10 +15,10 @@
          type: 'CMS',
       })"
    >
-      <div class="layout-item-wrapper">
-         <div class="layout-item-content">
+      <div class="layout-cms-wrapper">
+         <div class="layout-cms-content">
             <div 
-               class="layout-item-header"
+               class="layout-cms-header"
                @drop.stop
                @mousedown.stop.prevent="$emit('movement', {
                   event: $event,
@@ -28,24 +28,24 @@
                {{item.typeName}}
             </div>   
             <div 
-               class="layout-item-canvas"
+               class="layout-cms-canvas"
                @drop.stop="$emit('drop', {
                   event: $event,
                   id: item.props.id,
                })"
                @mousedown.stop
             >
-               <div class="layout-item-row">
-                  <div class="layout-item-id">{{item.props.id}}</div>
+               <div class="layout-cms-row">
+                  <div class="layout-cms-id">{{item.props.id}}</div>
                   <div 
-                     class="layout-item-name" 
+                     class="layout-cms-name" 
                      :contenteditable="editable" 
                      @dblclick="editable = true"
                   >
                      {{item.props.name}}
                   </div>
                </div>
-               <div class="layout-item-row">
+               <div class="layout-cms-row">
                   <el-select 
                      :options="webEffect"
                      :selected="item.props.effect"
@@ -118,14 +118,15 @@ export default class CMSElement extends Vue {
 </script>
 
 <style lang="scss" scoped>
-   .layout-item {
+   .layout-cms {
       border-style: solid;
-      border-color: black;
+      border-color: #2c3e50;
+      background-color: #2c3e50;
       box-sizing: border-box;
       z-index: 100;
       position: absolute;
       border-radius: 10px;
-      // overflow: hidden;
+      color: #fff;
 
       &-wrapper {
          width: 100%;
@@ -134,7 +135,6 @@ export default class CMSElement extends Vue {
       }
       
       &-content {
-         background-color: #fff;;
          border-radius: 10px;
          top: 0;
          left: 0;
@@ -149,7 +149,6 @@ export default class CMSElement extends Vue {
          padding: 10px;
          width: 100%;
          box-sizing: border-box;
-         // border-top: 1px solid black;
          display: flex;
          justify-content: center;
          align-items: center;
@@ -170,12 +169,12 @@ export default class CMSElement extends Vue {
       &-row {
          display: flex;
          justify-content: space-between;
-         border-top: 1px solid #000;
+         border-top: 1px solid #fff;
       }
 
       &-id {
          padding: 5px;
-         border-right: 1px solid black;
+         border-right: 1px solid #fff;
          display: flex;
          justify-content: center;
          align-items: center;
