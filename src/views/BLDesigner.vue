@@ -1,7 +1,7 @@
 <template>
   <div id="constructor">
-    <main-menu/>
-    <panel-left :width="LeftWidth" @resize="LeftWidth = $event">
+    <main-menu @newproject="initialize()"/>
+    <panel-left :width="LeftWidth" @resize="LeftWidth = $event" v-if="init">
       <accordion :list="[
         {
           name: 'СMS-web_look',
@@ -15,7 +15,7 @@
         <app-canvas :width="canvasWidth" :height="canvasHeight">
           <layout-b-l :left="LeftWidth"/>
         </app-canvas>
-        <panel-right :width="RightWidth" :height="canvasHeight" @resize="RightWidth = $event"/> 
+        <panel-right :width="RightWidth" :height="canvasHeight" @resize="RightWidth = $event" v-if="init"/> 
       </div>
       <!-- <panel-footer :height="FooterHeight" :width="canvasWidth + RightWidth" @resize="FooterHeight = $event"/> -->
     </div>
@@ -24,8 +24,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations} from 'vuex';
 import MainMenu from '@/components/PanelMenu.vue';
 import PanelLeft from '@/components/PanelLeft.vue';
 import PanelRight from '@/components/PanelRight.vue';
@@ -39,17 +38,19 @@ import LayoutBL from '@/components/CMSLayout.vue';
   computed: {
     ...mapGetters('CMS', {
       weblook: 'getWebLook', 
-      // screen: 'getScreen',
-      // block: 'getBlock',
       system_id: 'getSystemID',
     }),
   },
-  methods: { ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMS']) },
+  methods: { 
+    ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMS']), 
+    ...mapMutations('CMS', {addFirstScreen: 'initNewProject', clearAll: 'clearAll'}),
+  },
 })
 
 export default class UMLDesigner extends Vue {
-  private LeftWidth: number = 240;
-  private RightWidth: number = 240;
+  public init: boolean = false;
+  private LeftWidth: number = 0;
+  private RightWidth: number = 0;
   private FooterHeight: number = 0;
   private windowWidth: number = window.innerWidth;
   private windowHeight: number = window.innerHeight;
@@ -60,6 +61,8 @@ export default class UMLDesigner extends Vue {
   private screen!: any;
   private block!: any;
   private system_id!: any;
+  private addFirstScreen!: any;
+  private clearAll!: any;
 
   private get components(): any[] {
     const newArr: any[] = new Array();
@@ -87,6 +90,21 @@ export default class UMLDesigner extends Vue {
 
   private get canvasHeight(): number {
     return this.windowHeight - this.FooterHeight - 30;
+  }
+
+  public initialize() {
+    const init = () => {
+      this.init = true;
+      this.LeftWidth = 240;
+      this.RightWidth = 240;
+      this.addFirstScreen();
+    }
+    if (!this.init) {
+      init();
+    } else {
+      this.clearAll();
+      init();
+    }
   }
 
   private mounted(): void {

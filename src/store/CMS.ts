@@ -7,21 +7,7 @@ export default {
       systems_id: 'New system',
       selected: 0,
       selectedType: 'none',
-      screenList: [
-         {
-            props: { 
-               id: -1,
-               name: 'Главный экран',
-            },
-            params: {
-               type: 'Screen',
-               X: 40,
-               Y: 40,
-               width: 400,
-               height: 320,
-            }
-         }
-      ],
+      screenList: new Array(),
       cmsList: new Array(),
       weblook: new Array(),
       webeffect: new Array(),
@@ -271,8 +257,8 @@ export default {
       setSelected(state: any, payload: any) {
          state.selected = payload.id;
          state.selectedType = payload.type;
-         const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
-         console.log(state.cmsList[index]);
+         // const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
+         // console.log(state.cmsList[index]);
       },
       setValue(state: any, payload: any) {
          const key = payload.key;
@@ -280,6 +266,28 @@ export default {
          const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
          const cms = state.cmsList[index];
          cms.props[key] = value;
+      },
+      initNewProject(state: any) {
+         state.screenList.push({
+            props: { 
+               id: -1,
+               name: 'Главный экран',
+            },
+            params: {
+               type: 'Screen',
+               X: 120,
+               Y: 40,
+               width: 400,
+               height: 320,
+            }
+         })
+      },
+      clearAll(state: any) {
+         state.systems_id = 'New system';
+         state.selected = 0;
+         state.selectedType = 'none';
+         state.screenList = new Array();
+         state.cmsList = new Array();
       }
    },
    actions: {

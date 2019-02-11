@@ -37,7 +37,7 @@
                <div class="layout-cms-row">
                   <div 
                      class="layout-cms-id"
-                     :style="{'border-width' : 2 / zoom + 'px'}"
+                     :style="{'border-width' : 1 / zoom + 'px'}"
                   >{{item.props.id}}</div>
                   <div 
                      class="layout-cms-name" 
