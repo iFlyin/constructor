@@ -39,7 +39,7 @@ import {Vue, Component} from 'vue-property-decorator';
          default: [],
       },
       selected: {
-         type: [String, Number],
+         // type: [String, Number],
          required: true,
       },
       label: {

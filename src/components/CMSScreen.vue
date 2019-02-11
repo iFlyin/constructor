@@ -146,7 +146,7 @@ export default class CMSScreen extends Vue {
 
    private get childsList(): any[] {
       const screen = this.item.props.id;
-      const fixId = (screen === - 1) ? '' : screen;
+      const fixId = (screen === - 1) ? null : screen;
       return this.list.filter(el => el.props.parent_id == fixId);
    }
 

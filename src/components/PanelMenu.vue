@@ -7,10 +7,12 @@
                <li class="menu-list-item" @click="$emit('newproject')">Новый проект</li>
                <li class="menu-list-item" @click.stop>Загрузить проект
                   <ul class="menu-side-list">
-                     <li class="menu-side-list-item" @click="menuActive = !menuActive">РИИСЗ</li>
-                     <li class="menu-side-list-item" @click="menuActive = !menuActive">РС ЕРЗ</li>
-                     <li class="menu-side-list-item" @click="menuActive = !menuActive">ИС МВ</li>
-                     <li class="menu-side-list-item" @click="menuActive = !menuActive">СМЭВ-брокер</li>
+                     <li 
+                        v-for="system of systemsList"
+                        :key="system.uuid"
+                        class="menu-side-list-item" 
+                        @click="$emit('initByID', system.uuid), menuActive = !menuActive"                        
+                     >{{system.name}}</li>
                   </ul>
                </li>
                <li class="menu-list-item">Сохранить в файл</li>
@@ -45,7 +47,8 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-@Component({})
+import { mapGetters } from 'vuex';
+@Component({computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})}})
 export default class MainMenu extends Vue { 
    public menuActive: boolean = false;
    public active: string = '';
@@ -135,6 +138,8 @@ export default class MainMenu extends Vue {
          box-shadow: 2px 2px 8px rgba(0, 0, 0, .33);
 
          &-item {
+            display: flex;
+            justify-content: flex-start;
             padding: 10px 25px;
 
             &:hover {

@@ -4,6 +4,30 @@ import intersect from 'path-intersection';
 export default {
    namespaced: true,
    state: {
+      init: false,
+      panel: {
+         left: 0,
+         right: 0,
+         footer: 0,
+      },
+      systems_list: [
+         {
+            uuid: '57f7d380-15bc-4bf4-9137-27182bb69826',
+            name: 'РИИСЗ',
+         },
+         {
+            uuid: 'b8a99645-0bd6-4052-a0f8-aaf612328274',
+            name: '"СИСЗЛ"',
+         },
+         {
+            uuid: 'fe0b9fbc-0b8b-4a3a-96ee-332ae84b5fa8',
+            name: 'ИС МВ',
+         },
+         {
+            uuid: '1cb87d64-6bb1-4762-abc9-f9f5a81291a7',
+            name: 'Паллиативная помощь',
+         },
+      ],
       systems_id: 'New system',
       selected: 0,
       selectedType: 'none',
@@ -116,6 +140,9 @@ export default {
       },
    },
    getters: {
+      getInitStatus(state: any) { return state.init },
+      getPanel(state: any) { return state.panel},
+      getSystemsList(state: any) { return state.systems_list },
       getScreenList(state: any) { return state.screenList},
       getScreen(state: any) { return state.screen },
       getBlock(state: any) { return state.block},
@@ -141,6 +168,9 @@ export default {
       }
    },
    mutations: {
+      panelResize(state: any, payload: any): void {
+         state.panel[payload.dir] = payload.val;
+      },
       add2screenList(state: any, payload: any): void {
          state.screenList.push(payload);
       },
@@ -179,6 +209,7 @@ export default {
          const fixParentID = (parentID) ? parentID : -1; 
          const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
+         
          const parent = {
             X: parentPath.params.X,
             Y: parentPath.params.Y,
@@ -192,6 +223,7 @@ export default {
             W: CMSpath.params.width,
             H: CMSpath.params.height,
          };
+
          const CMScenter = {
             X: CMS.X + (CMS.W /2),
             Y: CMS.Y + (CMS.H /2),
@@ -268,6 +300,7 @@ export default {
          cms.props[key] = value;
       },
       initNewProject(state: any) {
+         state.init = true;
          state.screenList.push({
             props: { 
                id: -1,
@@ -288,6 +321,29 @@ export default {
          state.selectedType = 'none';
          state.screenList = new Array();
          state.cmsList = new Array();
+      },
+      setSystemId(state: any, payload: any) {
+         state.systems_id = payload;
+      },
+      pushAll(state: any, payload: any) {
+         (function pushNew (parent_id: any) {
+            const CMS: any[] = payload.filter((el: any) => el.parent_id == parent_id);
+            for(let i = 0; i < CMS.length; i++) {
+               const item = {
+                  params: {
+                     type: 'CMS',
+                     width: 160,
+                     height: 150,
+                     X: 10,
+                     Y: 10,
+                  },
+                  props: CMS[i],
+               }
+               state.cmsList.push(item);
+               pushNew(CMS[i].id);
+            }
+         })(null);
+         // console.log(state.cmsList)
       }
    },
    actions: {
@@ -309,8 +365,8 @@ export default {
       },
       asyncGetCMS: async (context: any) => {
          try {
-            const {data}: any = await http.get('get/get_cms');
-            const sortById: any[] = {data}.data.sort((a: any, b: any)=>{
+            const resp: any = await http.get('get/get_cms');
+            const sortById: any[] = resp.data.sort((a: any, b: any)=>{
                if (a.id < b.id) {
                   return -1;
                } else if (a.id > b.id) {
@@ -321,7 +377,35 @@ export default {
             })
             const length = sortById.length
             const lastID = sortById[length-1].id;
-            // console.log(lastID);
+            console.log(lastID);
+            // const uniqSys = new Array();
+            // for (const item of {data}.data){
+            //    const sys = uniqSys.findIndex((el: any) => el === item.systems_id) === -1
+            //       ? uniqSys.push(item.systems_id)
+            //       : '';
+            // }
+            // console.log(uniqSys);
+         } catch (err) {
+            console.log(err);
+         }
+      },
+      asyncGetCMSbyId: async (context: any, payload: any) => {
+         try {
+            context.commit('clearAll');
+            const resp: any = await http.get(`/get/get_cms?systems_id=${payload}`);
+            context.commit('setSystemId', payload);
+            context.commit('initNewProject');
+            context.commit('panelResize', {dir: 'left', val: 240});
+            context.commit('panelResize', {dir: 'right', val: 240});
+            context.commit('pushAll', resp.data);
+            const data = context.getters.getCMSlist;
+            for (const obj of data) {
+               context.commit('setCMSeffect', {
+                  v: obj.props.effect,
+                  id: obj.props.id,
+               })
+            }
+            console.log(data);
          } catch (err) {
             console.log(err);
          }

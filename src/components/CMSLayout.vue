@@ -74,7 +74,7 @@ export default class LayoutBL extends Vue {
    private selectedType!: string;
    private zoom: number = 1;
    private screenList!: any[];
-   private addProps: any;
+   private addProps!: any;
    private add2screenList!: any;
    private changeId!: any;
    private deleteScreen!: any;
@@ -103,7 +103,7 @@ export default class LayoutBL extends Vue {
       item.params.X = posX + scrollX;
       item.params.Y = posY + scrollY;
       item.props.id = ++this.id;
-      item.props.parent_id = (id === -1) ? '': id;
+      item.props.parent_id = (id === -1) ? null : id;
       for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
       this.list.push(item);
       const focusEl: any = this.$el;
@@ -238,8 +238,8 @@ export default class LayoutBL extends Vue {
    private wheel(e: WheelEvent): void {
       const clearZoom = Math.round((this.zoom * 10));
       if (e.deltaY > 0) { 
-         if (clearZoom === 4) {
-            this.zoom = 0.4
+         if (clearZoom === 1) {
+            this.zoom = 0.1
          } else {
             this.zoom -= 0.1;
          }
