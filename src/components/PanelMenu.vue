@@ -12,7 +12,6 @@
 <style lang="scss" scoped>
    #menu {
       flex: 0 0 auto;
-
       box-sizing: border-box;
       display: flex;
       justify-content: space-between;
@@ -20,7 +19,6 @@
       width: 100%;
       height: 30px;
       background-color: #2c3e50;
-      // box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, .35) inset;
    }
 
    .menu {

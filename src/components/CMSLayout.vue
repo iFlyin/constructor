@@ -87,22 +87,21 @@ export default class LayoutBL extends Vue {
       const id: number = payload.id;
       let item;
       try {
-         item = JSON.parse(e.dataTransfer.getData('block')); 
+         item = JSON.parse(e.dataTransfer.getData('CMS')); 
       } catch (err) {
          console.log(err);
          return;
       }
-      const centerX = item.width/2;
-      const centerY = item.height/2;
+      const centerX = item.params.width/2;
+      const centerY = item.params.height/2;
       const scrollX = e.target.scrollLeft;
       const scrollY = e.target.scrollTop;
-      item.coord = new Array();
       let posX = e.offsetX / this.zoom - centerX;
       if (posX < 0) { posX = 0 }
       let posY = e.offsetY / this.zoom - centerY;
       if (posY < 0) { posY = 0 }
-      item.coord.push(posX + scrollX);
-      item.coord.push(posY + scrollY);
+      item.params.X = posX + scrollX;
+      item.params.Y = posY + scrollY;
       item.props.id = ++this.id;
       item.props.parent_id = (id === -1) ? '': id;
       for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
@@ -149,7 +148,7 @@ export default class LayoutBL extends Vue {
 
    private movement(payload: any): void {
       const type = payload.type;
-      const arr = (type==='screen') ? this.screenList : this.list;
+      const arr = (type==='Screen') ? this.screenList : this.list;
       const e = payload.event;
       let parentOffsetX: number = 0;
       let parentOffsetY: number = 0;
@@ -172,7 +171,8 @@ export default class LayoutBL extends Vue {
          if (x < 0) { x = 0; }
          y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
          if (y < 0) { y = 0; }
-         arr[index].coord = [x, y];
+         arr[index].params.X = x;
+         arr[index].params.Y = y;
       }
 
       function clean(this: any, e: MouseEvent): void {
@@ -205,24 +205,24 @@ export default class LayoutBL extends Vue {
 
          if (direction.indexOf('left') !== -1) {
             if (newX > 0) {
-               that.screenList[index].coord.splice(0, 1, newX);
-               that.screenList[index].width -= e.movementX / that.zoom;
+               that.screenList[index].params.X = newX;
+               that.screenList[index].params.width -= e.movementX / that.zoom;
             } else {
-               that.screenList[index].coord.splice(0, 1, 0);
+               that.screenList[index].params.X = 0;
             }
          } else if (direction.indexOf('right') !== -1) { 
-            that.screenList[index].width += e.movementX / that.zoom;
+            that.screenList[index].params.width += e.movementX / that.zoom;
          }
          
          if (direction.indexOf('top') !== -1) {
             if (newY > 0) {
-               that.screenList[index].coord.splice(1, 1, newY);
-               that.screenList[index].height -= e.movementY / that.zoom;
+               that.screenList[index].params.Y = newY;
+               that.screenList[index].params.height -= e.movementY / that.zoom;
             } else  {
-               that.screenList[index].coord.splice(1, 1, 0);
+               that.screenList[index].params.Y = 0;
             }
          } else if (direction.indexOf('bottom') !== -1) { 
-            that.screenList[index].height += e.movementY / that.zoom;
+            that.screenList[index].params.height += e.movementY / that.zoom;
          }
       }
 
@@ -249,9 +249,6 @@ export default class LayoutBL extends Vue {
             this.zoom = 1.5;
          } else {
             this.zoom += 0.1;
-            if (this.$el.scrollWidth > this.$el.clientWidth) {
-               console.log('scroll - top')
-            }
          }
       }
    }

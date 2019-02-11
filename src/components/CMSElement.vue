@@ -4,10 +4,9 @@
       :class="{'layout-cms-active': selected == item.props.id}"
       :style="{
          'z-index': (item.props.id == selected) ? '1000000' : '',
-         left: (item.coord[0]) + 'px',
-         top: item.coord[1] + 'px',
-         width: item.width + 'px',
-         
+         left: (item.params.X) + 'px',
+         top: item.params.Y + 'px',
+         width: item.params.width + 'px',
          'border-width': 2 / zoom + 'px',
       }"
       @click.stop.prevent="$emit('select', {
@@ -25,7 +24,7 @@
                   id: item.props.id,
                })"
             >
-               {{item.typeName}}
+               {{weblookName(item.props.look)}}
             </div>   
             <div 
                class="layout-cms-canvas"
@@ -36,7 +35,10 @@
                @mousedown.stop
             >
                <div class="layout-cms-row">
-                  <div class="layout-cms-id">{{item.props.id}}</div>
+                  <div 
+                     class="layout-cms-id"
+                     :style="{'border-width' : 2 / zoom + 'px'}"
+                  >{{item.props.id}}</div>
                   <div 
                      class="layout-cms-name" 
                      :contenteditable="editable" 
@@ -92,6 +94,7 @@ import ElSelect from '@/components/libs/Select.vue';
    computed: {...mapGetters('CMS', {
       webEffect: 'getWebEffect',
       selected: 'getSelected',
+      weblookName: 'getLookName',
    })},
    methods: {...mapMutations('CMS', {setEffect: 'setCMSeffect'})}
 })
@@ -103,17 +106,17 @@ export default class CMSElement extends Vue {
    private effect: any = '';
    private linkTo: string = '';
 
-   private checkLink(e: any, id: number): void {
-      if (e) {
-         this.$emit('change', {
-            value: e,
-            id: id,
-         })
-         this.linkTo = e;
-      } else {
-         this.linkTo = '';
-      }
-   }
+   // private checkLink(e: any, id: number): void {
+   //    if (e) {
+   //       this.$emit('change', {
+   //          value: e,
+   //          id: id,
+   //       })
+   //       this.linkTo = e;
+   //    } else {
+   //       this.linkTo = '';
+   //    }
+   // }
 }
 </script>
 
@@ -127,6 +130,7 @@ export default class CMSElement extends Vue {
       position: absolute;
       border-radius: 10px;
       color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
 
       &-wrapper {
          width: 100%;
@@ -169,12 +173,16 @@ export default class CMSElement extends Vue {
       &-row {
          display: flex;
          justify-content: space-between;
-         border-top: 1px solid #fff;
+         // border-top: 1px solid #fff;
+         &:first-child{
+            background-color: #fff;
+            color: #2c3e50;
+         }
       }
 
       &-id {
          padding: 5px;
-         border-right: 1px solid #fff;
+         border-right: 2px solid #2c3e50;
          display: flex;
          justify-content: center;
          align-items: center;

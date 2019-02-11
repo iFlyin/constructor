@@ -65,12 +65,11 @@ export default class UMLDesigner extends Vue {
     const newArr: any[] = new Array();
     for (const item of this.weblook) {
       const newItem = {
-        type: 'block',
-        width: 160,
-        height: 150,
-    
-        typeName: item.name,
-        constName: item.const_name,
+        params: {
+          type: 'CMS',
+          width: 160,
+          height: 150,
+        },
         props: {
           systems_id: this.system_id,
           look: item.id,

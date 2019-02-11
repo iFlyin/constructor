@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { mapMutations }from 'vuex';
+import { mapGetters, mapMutations }from 'vuex';
 import ElReadonly from './ReadOnly.vue';
 import ElInput from './Input.vue';
 import ElInputNumber from './InputNumber.vue';
@@ -39,19 +39,23 @@ import ElSelect from './ElSelect.vue';
          required: true,
       }
    }, 
+   computed: {...mapGetters('CMS', { lookName: 'getLookName', effectName: 'getEffectName'})},
    methods: {...mapMutations('CMS',{ setValue: 'setValue'})},
 })
 export default class InputView extends Vue {
-   private label!: 'string';
+   private label!: string;
    private cms!: any; 
+   private lookName!: any;
+   private effectName!: any;
 
    private get value(): any {
       if (this.cms.props) {
-         if(this.cms.hasOwnProperty(this.label)) {
-            return this.cms[this.label];
-         } else {
-            return this.cms.props[this.label];
+         if( this.label === 'look') {
+            return this.lookName(this.cms.props[this.label]);
+         } else if ( this.label === 'effect') {
+            return this.effectName(this.cms.props[this.label]);
          }
+         return this.cms.props[this.label];
       } else return null;
    }
 

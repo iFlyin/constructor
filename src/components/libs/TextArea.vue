@@ -1,5 +1,5 @@
 <template>
-   <textarea :style="{resize: 'vertical'}" :disabled="!val"></textarea>
+   <textarea :style="{resize: 'vertical'}" :disabled="(val === null)" :value="val"  @change="$emit('change', $event.target.value)"></textarea>
 </template>
 
 <script lang="ts">

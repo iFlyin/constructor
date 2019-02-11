@@ -9,13 +9,17 @@ export default {
       selectedType: 'none',
       screenList: [
          {
-            type: 'screen',
-            name: 'Главный экран',
-            width: 400,
-            height: 320,
-            props: { id: -1 },
-            coord: [40, 40],
-            active: true,
+            props: { 
+               id: -1,
+               name: 'Главный экран',
+            },
+            params: {
+               type: 'Screen',
+               X: 40,
+               Y: 40,
+               width: 400,
+               height: 320,
+            }
          }
       ],
       cmsList: new Array(),
@@ -110,19 +114,19 @@ export default {
          },
       },
       prop_default: {
-         d_start: null,
-         f_fin: null,
-         d_modif: null,
+         d_start: '',
+         f_fin: '',
+         d_modif: '',
          name: 'Имя компонента',
          fullname: 'Имя компонента',
-         description: null,
-         group_number: null,
-         db_function_name: null,
-         db_function_params: null,
-         fields_list: null,
-         gui_icon: null,
-         add_params: null,
-         check_right: null,
+         description: '',
+         group_number: '',
+         db_function_name: '',
+         db_function_params: '',
+         fields_list: '',
+         gui_icon: '',
+         add_params: '',
+         check_right: '',
       },
    },
    getters: {
@@ -137,6 +141,18 @@ export default {
       getSelected(state: any) { return state.selected },
       getSelectedType(state: any) { return state.selectedType },
       getSystemID (state: any) { return state.systems_id },
+      getLookName: (state: any) => (id: number) => {
+         const index = state.weblook.findIndex((el: any) => el.id === id);
+         return (index > -1)
+            ? state.weblook[index].name
+            : 'Без внешнего вида';
+      },
+      getEffectName: (state: any) => (id: number) => {
+         const index = state.webeffect.findIndex((el: any) => el.id === id);
+         return (index > -1)
+            ? state.webeffect[index].name
+            : 'Не задан';
+      }
    },
    mutations: {
       add2screenList(state: any, payload: any): void {
@@ -178,17 +194,17 @@ export default {
          const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
          const parent = {
-            X: parentPath.coord[0],
-            Y: parentPath.coord[1],
-            W: parentPath.width,
-            H: parentPath.height,
+            X: parentPath.params.X,
+            Y: parentPath.params.Y,
+            W: parentPath.params.width,
+            H: parentPath.params.height,
          }
 
          const CMS = {
-            X: CMSpath.coord[0] + parent.X,
-            Y: CMSpath.coord[1] + parent.Y,
-            W: CMSpath.width,
-            H: CMSpath.height,
+            X: CMSpath.params.X + parent.X,
+            Y: CMSpath.params.Y + parent.Y,
+            W: CMSpath.params.width,
+            H: CMSpath.params.height,
          };
          const CMScenter = {
             X: CMS.X + (CMS.W /2),
@@ -207,21 +223,24 @@ export default {
          const childIndex = state.screenList.findIndex((el: any) => el.props.id === payload.id);
 
          if (childIndex != -1) {
-            X = state.screenList[childIndex].coord[0];
-            Y = state.screenList[childIndex].coord[1];
+            X = state.screenList[childIndex].params.X;
+            Y = state.screenList[childIndex].params.Y;
             clear(payload.id);
          }
          
          if (check) {
             const newScreen = {
-               type: 'screen',
-               // typeName: 'Экран',
-               width: 400,
-               height: 320,
-               active: true,
-               props: { id: payload.id },
-               coord: [X, Y],
-               name: state.effect2screen[effect],
+               props: { 
+                  id: payload.id,
+                  name: state.effect2screen[effect],
+               },
+               params: {
+                  type: 'Screen',
+                  X: X,
+                  Y: Y,
+                  width: 400,
+                  height: 320,
+               },
             }
             state.screenList.push(newScreen);
          }
@@ -252,15 +271,15 @@ export default {
       setSelected(state: any, payload: any) {
          state.selected = payload.id;
          state.selectedType = payload.type;
-         // const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
-         // console.log(state.cmsList[index]);
+         const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
+         console.log(state.cmsList[index]);
       },
       setValue(state: any, payload: any) {
          const key = payload.key;
          const value = payload.v;
          const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
          const cms = state.cmsList[index];
-         cms[key] = value;
+         cms.props[key] = value;
       }
    },
    actions: {

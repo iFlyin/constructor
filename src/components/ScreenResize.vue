@@ -147,10 +147,6 @@ export default class SelectResize extends Vue {
          height: 0;
          outline: none;
          background: transparent;
-         
-         &:hover {
-            // border-color: red;
-         }
       }
    }
 

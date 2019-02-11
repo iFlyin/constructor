@@ -6,17 +6,17 @@
             'z-index': (childSelected) 
                ? '1000000' : (item.props.id == selected)
                ? '1111' : '',
-            left: (item.coord[0]) + 'px',
-            top: item.coord[1] + 'px',
-            width: item.width + 'px',
-            height: item.height + 'px',
+            left: item.params.X + 'px',
+            top: item.params.Y + 'px',
+            width: item.params.width + 'px',
+            height: item.params.height + 'px',
             'border-width': 2 / zoom + 'px',
-            'border-color': (item.active) ? '#2c3e50' : 'grey',
-            'border-style': (item.active) ? 'solid' : 'dashed'
+            'border-color': '#2c3e50',
+            'border-style': 'solid'
          }"
          @click.stop.prevent="$emit('select', {
             id: item.props.id,
-            type: 'Screen'
+            type: item.params.type,
          })"
       >
          <div class="layout-item-wrapper">
@@ -33,19 +33,18 @@
                   @mousedown.stop.prevent="$emit('movement', {
                      event: $event,
                      id: item.props.id,
-                     type: 'screen',
+                     type: 'Screen',
                   })"
                >
-                  {{ (item.props.id &lt; 0) ? -(item.props.id) : '' }} {{item.name || 'Пустой экран'}}
-                  <!-- {{svg}} -->
+                  {{ (item.props.id &lt; 0) ? -(item.props.id) : '' }} {{item.props.name || 'Пустой экран'}}
                </div>   
                <div 
                   class="layout-item-canvas"
                   @dragover.stop="$event.preventDefault()"
-                  @drop.stop="(item.active) ? $emit('drop', {
+                  @drop.stop="$emit('drop', {
                      event: $event,
                      id: item.props.id,
-                  }) : ''"
+                  })"
                   @mousedown.stop.prevent
                >  
                   <cms-element
@@ -137,10 +136,10 @@ export default class CMSScreen extends Vue {
    //    h: this.el.scrollHeight,
    // }
    
-   private get X(): number { return this.item.coord[0]; }
-   private get Y(): number { return this.item.coord[1]; }
-   private get width(): number { return this.item.width; }
-   private get height(): number { return this.item.height; }
+   private get X(): number { return this.item.params.X; }
+   private get Y(): number { return this.item.params.Y; }
+   private get width(): number { return this.item.params.width; }
+   private get height(): number { return this.item.params.height; }
    private get centerX(): number { return this.X + (this.width / 2); }
    private get centerY(): number { return this.Y + (this.height); }
    private get path(): string { return this.rectConstructor(this.X, this.Y, this.width, this.height); }
@@ -165,9 +164,8 @@ export default class CMSScreen extends Vue {
    }
 
    private get lines(): any[] {
-      const availableScreen = this.screenList.filter(el => el.active === true);  
       const childWithEffect = this.childsList.filter(el => {
-         for (const screen of availableScreen) {
+         for (const screen of this.screenList) {
             if (el.props.id == screen.props.id) { return true }
          }
       });
@@ -175,14 +173,14 @@ export default class CMSScreen extends Vue {
       for (const obj of childWithEffect) {
          const name = "id" + obj.props.id;
          const arr = new Array();
-         const startX = obj.coord[0] + (obj.width / 2) + this.X;
-         const startY = obj.coord[1] + (obj.height / 2) + this.Y + 40;
-         const targetInd = availableScreen.findIndex(el => el.props.id == obj.props.id);
-         const targetObj = availableScreen[targetInd];
-         const targetX = targetObj.coord[0] - 10;
-         const targetY = targetObj.coord[1] - 10;
-         const targetW = targetObj.width + 20;
-         const targetH = targetObj.height + 20;
+         const startX = obj.params.X + (obj.params.width / 2) + this.X;
+         const startY = obj.params.Y + (obj.params.height / 2) + this.Y + 40;
+         const targetInd = this.screenList.findIndex(el => el.props.id == obj.props.id);
+         const targetObj = this.screenList[targetInd];
+         const targetX = targetObj.params.X - 10;
+         const targetY = targetObj.params.Y - 10;
+         const targetW = targetObj.params.width + 20;
+         const targetH = targetObj.params.height + 20;
 
          const targetPath = this.rectConstructor(targetX, targetY, targetW, targetH);
          const path = `M${startX},${startY} L${targetX + (targetW/2)},${targetY + (targetH/2)}`;
@@ -193,20 +191,19 @@ export default class CMSScreen extends Vue {
          const realPath = this.lineConstructor(startX, startY, realEndX, realEndY);
          lines.push(realPath);
       }
-      
       return lines;
    }
 
    private resize(e: any): void {
-      const parentX = this.item.coord[0];
-      const parentY = this.item.coord[1] + 40;
+      const parentX = this.item.params.X;
+      const parentY = this.item.params.Y + 40; //ПОЧЕМУ 40?
       e.parentOffset = [parentX, parentY];
       this.$emit('resize', e);
    }
 
    private movement(e: any): void {
-      const parentX = this.item.coord[0];
-      const parentY = this.item.coord[1] + 40;
+      const parentX = this.item.params.X;
+      const parentY = this.item.params.Y + 40; //ПОЧЕМУ 40?
       e.parentOffset = [parentX, parentY];
       this.$emit('movement', e);
    }
@@ -232,7 +229,6 @@ export default class CMSScreen extends Vue {
       &-wrapper {
          width: 100%;
          height: 100%;
-         // background: #fff;
          position: relative;
       }
       

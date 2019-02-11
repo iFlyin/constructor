@@ -14,9 +14,9 @@
                v-for="(item, index) of panel.list" 
                :key="index"
                :draggable="panel.d$d"
-               @dragstart="dragStart($event, item, item.type)"
+               @dragstart="dragStart($event, item, item.params.type)"
             >
-            {{item.typeName}}
+            {{weblookName(item.props.look)}}
             </div>
          </div>
       </div>
@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
 @Component({
    components: {},
@@ -33,7 +34,8 @@ import { Component, Vue } from 'vue-property-decorator';
          type: Array,
          required: true,
       }
-   }
+   },
+   computed: {...mapGetters('CMS', { weblookName: 'getLookName' })}
 })
 export default class Accordion extends Vue {
    private activePanel: number = 0;
