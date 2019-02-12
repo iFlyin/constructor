@@ -44,7 +44,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
     }),
   },
   methods: { 
-    ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMS', 'asyncGetCMSbyId']), 
+    ...mapActions('CMS', ['asyncGetLook', 'asyncGetEffect', 'asyncGetCMSbyId', 'asyncGetID']), 
     ...mapMutations('CMS', {
       addFirstScreen: 'initNewProject', 
       clearAll: 'clearAll',
@@ -59,7 +59,7 @@ export default class UMLDesigner extends Vue {
   private windowHeight: number = window.innerHeight;
   private asyncGetLook!: any;
   private asyncGetEffect!: any;
-  private asyncGetCMS!: any;
+  private asyncGetID!: any;
   private asyncGetCMSbyId!: any;
   private weblook!: any[];
   private screen!: any;
@@ -101,6 +101,7 @@ export default class UMLDesigner extends Vue {
   public initialize() {
     const init = () => {
       this.addFirstScreen();
+      this.asyncGetID();
       this.panelResize({dir: 'left', val: 240});
       this.panelResize({dir: 'right', val: 240});
     }
@@ -123,8 +124,6 @@ export default class UMLDesigner extends Vue {
   private created(): void {
     this.asyncGetLook();
     this.asyncGetEffect();
-    this.asyncGetCMS();
-    // this.asyncGetCMSbyId();
   }
 }
 </script>

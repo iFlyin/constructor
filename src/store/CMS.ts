@@ -31,6 +31,8 @@ export default {
       systems_id: 'New system',
       selected: 0,
       selectedType: 'none',
+      id: 0,
+      zoom: 1,
       screenList: new Array(),
       cmsList: new Array(),
       weblook: new Array(),
@@ -144,6 +146,8 @@ export default {
       getPanel(state: any) { return state.panel},
       getSystemsList(state: any) { return state.systems_list },
       getScreenList(state: any) { return state.screenList},
+      getID(state: any) { return state.id },
+      getZoom(state: any) {return state.zoom },
       getScreen(state: any) { return state.screen },
       getBlock(state: any) { return state.block},
       getWebLook(state: any) { return state.weblook },
@@ -170,6 +174,26 @@ export default {
    mutations: {
       panelResize(state: any, payload: any): void {
          state.panel[payload.dir] = payload.val;
+      },
+      setID(state: any, payload: any): void {
+         state.id = payload;
+      },
+      setZoom(state: any, payload: any): void {
+         const clearZoom = Math.round((state.zoom * 10));
+            if (payload.deltaY > 0) { 
+               if (clearZoom === 2) {
+                  state.zoom = 0.2
+               } else {
+               state.zoom -= 0.1;
+            }
+         }
+         if (payload.deltaY < 0) {
+            if (clearZoom === 15) {
+               state.zoom = 1.5;
+            } else {
+               state.zoom += 0.1;
+            }
+         }
       },
       add2screenList(state: any, payload: any): void {
          state.screenList.push(payload);
@@ -345,6 +369,7 @@ export default {
          })(null);
          // console.log(state.cmsList)
       }
+
    },
    actions: {
       asyncGetLook: async (context: any) => {
@@ -363,7 +388,7 @@ export default {
             console.log(err);
          }
       },
-      asyncGetCMS: async (context: any) => {
+      asyncGetID: async (context: any) => {
          try {
             const resp: any = await http.get('get/get_cms');
             const sortById: any[] = resp.data.sort((a: any, b: any)=>{
@@ -377,14 +402,7 @@ export default {
             })
             const length = sortById.length
             const lastID = sortById[length-1].id;
-            console.log(lastID);
-            // const uniqSys = new Array();
-            // for (const item of {data}.data){
-            //    const sys = uniqSys.findIndex((el: any) => el === item.systems_id) === -1
-            //       ? uniqSys.push(item.systems_id)
-            //       : '';
-            // }
-            // console.log(uniqSys);
+            context.commit('setID', lastID);
          } catch (err) {
             console.log(err);
          }

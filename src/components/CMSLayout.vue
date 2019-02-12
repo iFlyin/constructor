@@ -8,7 +8,7 @@
       })"
       @keyup.delete="del()"
       tabindex="0"
-      @mousewheel.prevent="wheel($event)"
+      @mousewheel.prevent="setZoom($event)"
       :style="{ zoom: zoom }"
    >
       <cms-screen 
@@ -25,7 +25,6 @@
          @drop="drop($event)"
          @change="changeId($event)"
       />
-      <!-- {{list}} -->
    </div>
 </template>
 
@@ -50,6 +49,8 @@ import CmsScreen from '@/components/CMSScreen.vue';
          addProps: 'getProp',
          selected: 'getSelected',
          selectedType: 'getSelectedType',
+         id: 'getID',
+         zoom: 'getZoom',
       }),
    },
    methods: {
@@ -60,6 +61,8 @@ import CmsScreen from '@/components/CMSScreen.vue';
          clearEffect: 'clearCMSeffect',
          deleteCMS: 'deleteCMS',
          select: 'setSelected',
+         setID: 'setID',
+         setZoom: 'setZoom',
       }),
    }
 })
@@ -67,12 +70,13 @@ import CmsScreen from '@/components/CMSScreen.vue';
 export default class LayoutBL extends Vue {
    // описать интерфейс объекта и придать типу массива
    private list!: any[];
-   private id: number = 0;
-   private screenId: number = -1;
+   private id!: number;
+   private setID: any;
+   // private screenId: number = -1;
    private left!: number;
    private selected!: number;
    private selectedType!: string;
-   private zoom: number = 1;
+   private zoom!: number;
    private screenList!: any[];
    private addProps!: any;
    private add2screenList!: any;
@@ -102,7 +106,8 @@ export default class LayoutBL extends Vue {
       if (posY < 0) { posY = 0 }
       item.params.X = posX + scrollX;
       item.params.Y = posY + scrollY;
-      item.props.id = ++this.id;
+      this.setID(this.id + 1);
+      item.props.id = this.id;
       item.props.parent_id = (id === -1) ? null : id;
       for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
       this.list.push(item);
@@ -236,21 +241,7 @@ export default class LayoutBL extends Vue {
    }
 
    private wheel(e: WheelEvent): void {
-      const clearZoom = Math.round((this.zoom * 10));
-      if (e.deltaY > 0) { 
-         if (clearZoom === 1) {
-            this.zoom = 0.1
-         } else {
-            this.zoom -= 0.1;
-         }
-      }
-      if (e.deltaY < 0) {
-         if (clearZoom === 15) {
-            this.zoom = 1.5;
-         } else {
-            this.zoom += 0.1;
-         }
-      }
+      
    }
 }
 </script>

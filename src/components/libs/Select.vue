@@ -1,7 +1,7 @@
 <template>
    <div class="select">
-      <div class="list-wrapper" v-if="show" @click.stop="show = false"></div>
-      <label class="select-label" @click="show = !show">
+      <div class="list-wrapper" v-if="show" @click.stop="show=false"></div>
+      <label class="select-label" @click="(show = !show), getPos()">
       <span>{{label}}</span>
       <div class="select-button">
          <span class="select-text">{{(selected === '') ? 'Нет' : selected}}</span>
@@ -13,10 +13,12 @@
             @mouseover="focus()"
             @mousewheel.stop
             tabindex="0"
+            :style="{
+               top: this.top + 'px',
+               left: this.left + 'px',
+            }"
          >
-            <div class="option-item" value="" @click="select('')">
-               Нет
-            </div>
+            <div class="option-item" value="" @click="select('')">Нет</div>
             <div 
                class="option-item"
                v-for="(option, index) of options"
@@ -31,7 +33,9 @@
 </template>
 
 <script lang="ts">
-import {Vue, Component} from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
+
 @Component({
    props: {
       options: {
@@ -50,12 +54,16 @@ import {Vue, Component} from 'vue-property-decorator';
          type: [String, Number],
          required: true,
       }
-   }
+   }, 
+   computed: {...mapGetters('CMS', {zoom: 'getZoom'})},
 })
 export default class ElSelect extends Vue{
    private show: boolean = false;
    private selected!: any;
    private options!: any;
+   private top: number = 0;
+   private left: number = 0;
+   private zoom!: number;
 
    private select(v: any): void {
       this.show = false;
@@ -65,6 +73,16 @@ export default class ElSelect extends Vue{
    private focus(): void {
       const el: any = this.$el;
       el.focus();
+   }
+
+   private getPos(): void {
+      const el: any = this.$parent.$el;
+      const parent : any = this.$parent.$parent.$el.firstChild;
+      const canvas : any = this.$parent.$parent.$parent;
+      console.log(canvas);
+      this.top = el.offsetTop + parent.offsetTop + el.offsetHeight + 44 + (30 / this.zoom);
+      this.left = el.offsetLeft + parent.offsetLeft + 4 +(canvas.left / this.zoom);
+      console.log(this.zoom);
    }
 }
 </script>
@@ -108,9 +126,11 @@ export default class ElSelect extends Vue{
    }
 
    .option-list {
-      margin-top: 30px;
+      // margin-top: 160px;
       user-select: none;
       position: fixed;
+      top: 0;
+      left: 0;
       z-index: 100000000;
       width: auto;
       min-width: 156px;

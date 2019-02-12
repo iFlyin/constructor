@@ -39,13 +39,7 @@
                      class="layout-cms-id"
                      :style="{'border-width' : 1 / zoom + 'px'}"
                   >{{item.props.id}}</div>
-                  <div 
-                     class="layout-cms-name" 
-                     :contenteditable="editable" 
-                     @dblclick="editable = true"
-                  >
-                     {{item.props.name}}
-                  </div>
+                  <div class="layout-cms-name">{{item.props.name}}</div>
                </div>
                <div class="layout-cms-row">
                   <el-select 
@@ -103,20 +97,6 @@ export default class CMSElement extends Vue {
    private item!: any;
    private webEffect!: any[];
    private setEffect!: any;
-   private effect: any = '';
-   private linkTo: string = '';
-
-   // private checkLink(e: any, id: number): void {
-   //    if (e) {
-   //       this.$emit('change', {
-   //          value: e,
-   //          id: id,
-   //       })
-   //       this.linkTo = e;
-   //    } else {
-   //       this.linkTo = '';
-   //    }
-   // }
 }
 </script>
 
@@ -173,6 +153,8 @@ export default class CMSElement extends Vue {
       &-row {
          display: flex;
          justify-content: space-between;
+         max-width: 100%;
+         overflow: hidden;
          // border-top: 1px solid #fff;
          &:first-child{
             background-color: #fff;
