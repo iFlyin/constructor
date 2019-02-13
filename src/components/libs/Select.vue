@@ -77,12 +77,12 @@ export default class ElSelect extends Vue{
 
    private getPos(): void {
       const el: any = this.$parent.$el;
-      const parent : any = this.$parent.$parent.$el.firstChild;
-      const canvas : any = this.$parent.$parent.$parent;
-      console.log(canvas);
-      this.top = el.offsetTop + parent.offsetTop + el.offsetHeight + 44 + (30 / this.zoom);
-      this.left = el.offsetLeft + parent.offsetLeft + 4 +(canvas.left / this.zoom);
-      console.log(this.zoom);
+      const parent :any = this.$parent.$parent.$el.firstChild;
+      const canvas :any = this.$parent.$parent.$parent;
+      const scrollLeft:any = canvas.$el.scrollLeft;
+      const scrollTop:any = canvas.$el.scrollTop;
+      this.top = el.offsetTop + parent.offsetTop + el.offsetHeight + 44 + (30 / this.zoom) - scrollTop;
+      this.left = el.offsetLeft + parent.offsetLeft + 4 +(canvas.left / this.zoom) - scrollLeft;
    }
 }
 </script>

@@ -127,10 +127,11 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-@Component({props: { 
-   zoom: { type: Number, default: 1 },
-   id: {type: Number, required: true },
-}})
+import { mapGetters } from 'vuex';
+@Component({
+   props: { id: {type: Number, required: true }, }, 
+   computed: { ...mapGetters('CMS', { zoom: 'getZoom' }) }
+})
 export default class SelectResize extends Vue { 
    private zoom!: number; 
    private id!: number;

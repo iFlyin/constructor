@@ -207,27 +207,36 @@ export default class LayoutBL extends Vue {
       function onResize(e: MouseEvent) {
          const newX = (e.clientX - that.left - parentOffsetX) / that.zoom + scrollX;
          const newY = (e.clientY - 30 - parentOffsetY) / that.zoom + scrollY;
+         const minWidth = 300;
+         const minHeight = 200;
+         const path = that.screenList[index].params;
+         const moveX = e.movementX / that.zoom;
+         const moveY = e.movementY / that.zoom;
 
          if (direction.indexOf('left') !== -1) {
             if (newX > 0) {
-               that.screenList[index].params.X = newX;
-               that.screenList[index].params.width -= e.movementX / that.zoom;
+               if (path.width - moveX > minWidth) {
+                  path.width -= moveX; 
+                  path.X = newX;
+               } else { path.width =  minWidth; }
             } else {
-               that.screenList[index].params.X = 0;
+               path.X = 0;
             }
          } else if (direction.indexOf('right') !== -1) { 
-            that.screenList[index].params.width += e.movementX / that.zoom;
+            if (path.width + moveX > minWidth) { path.width += moveX; } else { path.width =  minWidth; }
          }
          
          if (direction.indexOf('top') !== -1) {
             if (newY > 0) {
-               that.screenList[index].params.Y = newY;
-               that.screenList[index].params.height -= e.movementY / that.zoom;
+               if (path.height - moveY > minHeight) { 
+                  path.height -= moveY; 
+                  path.Y = newY; 
+               } else { path.height = minHeight; }
             } else  {
-               that.screenList[index].params.Y = 0;
+               path.Y = 0;
             }
          } else if (direction.indexOf('bottom') !== -1) { 
-            that.screenList[index].params.height += e.movementY / that.zoom;
+            if (path.height + moveY > minHeight) { path.height += moveY; } else { path.height = minHeight; }
          }
       }
 
