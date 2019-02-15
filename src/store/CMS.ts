@@ -180,18 +180,39 @@ export default {
       },
       setZoom(state: any, payload: any): void {
          const clearZoom = Math.round((state.zoom * 10));
-            if (payload.deltaY > 0) { 
-               if (clearZoom === 2) {
-                  state.zoom = 0.2
-               } else {
+         const event = payload.e;
+         const layout = payload.el;
+         const realWidth = layout.clientWidth * state.zoom;
+         const realHeight = layout.clientHeight * state.zoom;
+         const mouseX = event.clientX - state.panel.left;
+         const mouseY = event.clientY - 30;
+         const offsetX = (mouseX / realWidth) * 100;
+         const offsetY = (mouseY / realHeight) * 100;
+
+         if (event.deltaY > 0) { 
+            if (clearZoom === 2) {
+               state.zoom = 0.2
+            } else {
                state.zoom -= 0.1;
             }
          }
-         if (payload.deltaY < 0) {
+         if (event.deltaY < 0) {
             if (clearZoom === 15) {
                state.zoom = 1.5;
             } else {
                state.zoom += 0.1;
+               const newClientW = (realWidth / state.zoom ) / 2;
+               const newClientH = (realHeight / state.zoom ) / 2;
+               const centerX = layout.clientWidth / 100 * offsetX;
+               const centerY = layout.clientHeight / 100 * offsetY;
+               const scrollX = (centerX - newClientW) > 0
+                  ? centerX - newClientW
+                  : 0;
+               const scrollY = (centerY - newClientH) > 0
+                  ? centerY - newClientH
+                  : 0;
+               layout.scrollLeft += scrollX;
+               layout.scrollTop += scrollY;
             }
          }
       },

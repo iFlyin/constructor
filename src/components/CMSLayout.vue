@@ -8,7 +8,7 @@
       })"
       @keyup.delete="del()"
       tabindex="0"
-      @mousewheel.prevent="setZoom($event)"
+      @mousewheel.capture.stop.prevent="wheel($event)"
       :style="{ zoom: zoom }"
    >
       <cms-screen 
@@ -63,6 +63,7 @@ import CmsScreen from '@/components/CMSScreen.vue';
          select: 'setSelected',
          setID: 'setID',
          setZoom: 'setZoom',
+         setScroll: 'setScroll',
       }),
    }
 })
@@ -72,7 +73,6 @@ export default class LayoutBL extends Vue {
    private list!: any[];
    private id!: number;
    private setID: any;
-   // private screenId: number = -1;
    private left!: number;
    private selected!: number;
    private selectedType!: string;
@@ -85,6 +85,7 @@ export default class LayoutBL extends Vue {
    private clearEffect!: any;
    private deleteCMS!: any;
    private select!: any;
+   private setZoom!: any;
 
    private drop(payload: any): void {
       const e: any = payload.event;
@@ -170,12 +171,29 @@ export default class LayoutBL extends Vue {
       const that = this;
       const offsetX = e.offsetX;
       const offsetY = e.offsetY;
+      let parentID: number;
+      let parentIndex: number;
+      let parent: any;
+      let maxX: number;
+      let maxY: number;
+      if (type!=='Screen') {
+         parentID = (arr[index].props.parent_id === null) 
+            ? -1
+            : arr[index].props.parent_id;
+         parentIndex = this.screenList.findIndex((el: any) => el.props.id === parentID)
+         parent = this.screenList[parentIndex];
+         maxX = parent.params.width - 170;
+         maxY = parent.params.height - 180;
+      }
       
       function move(e: MouseEvent): void {
          x = (e.clientX - offsetX - that.left) / that.zoom  + scrollX - parentOffsetX;
          if (x < 0) { x = 0; }
+         if (maxX) { if (x > maxX) { x = maxX} }
          y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
          if (y < 0) { y = 0; }
+         if (maxY) { if (y > maxY) { y = maxY} }
+         console.log(x + ' : ' + maxX);
          arr[index].params.X = x;
          arr[index].params.Y = y;
       }
@@ -191,6 +209,7 @@ export default class LayoutBL extends Vue {
 
    private resize(payload: any): void {
       const e: MouseEvent = payload.event;
+      // console.log(payload);
       let parentOffsetX: number = 0;
       let parentOffsetY: number = 0;
       if (payload.hasOwnProperty('parentOffset')){
@@ -205,11 +224,11 @@ export default class LayoutBL extends Vue {
       const scrollY = that.$el.scrollTop;
 
       function onResize(e: MouseEvent) {
+         const path = that.screenList[index].params;
          const newX = (e.clientX - that.left - parentOffsetX) / that.zoom + scrollX;
          const newY = (e.clientY - 30 - parentOffsetY) / that.zoom + scrollY;
-         const minWidth = 300;
-         const minHeight = 200;
-         const path = that.screenList[index].params;
+         const minWidth = payload.minWidth;
+         const minHeight = payload.minHeight;
          const moveX = e.movementX / that.zoom;
          const moveY = e.movementY / that.zoom;
 
@@ -249,8 +268,11 @@ export default class LayoutBL extends Vue {
       window.addEventListener('mouseup', clean);
    }
 
-   private wheel(e: WheelEvent): void {
-      
+   private wheel(e: any) { 
+      this.setZoom({
+         el: this.$el,
+         e: e,
+      });
    }
 }
 </script>

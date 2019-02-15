@@ -24,7 +24,11 @@
                v-if="item.props.id == selected"
                :zoom="zoom"
                :id="item.props.id"
-               @resize="$emit('resize', $event)"
+               @resize="$emit('resize', {
+                  ...$event,
+                  minHeight: minHeight,
+                  minWidth: minWidth
+               })"
             />
             <div class="layout-item-content">
                <div 
@@ -148,6 +152,24 @@ export default class CMSScreen extends Vue {
       const screen = this.item.props.id;
       const fixId = (screen === - 1) ? null : screen;
       return this.list.filter(el => el.props.parent_id == fixId);
+   }
+
+   private get minWidth(): any {
+      let minWidth = 300;
+      for (const child of this.childsList) {
+         const childMaxX = child.params.X + 180;
+         if (childMaxX > minWidth) { minWidth = childMaxX; }
+      }
+      return minWidth;
+   }
+
+   private get minHeight(): any {
+      let minHeight = 200;
+      for (const child of this.childsList) {
+         const childMaxY = child.params.Y + 180;
+         if (childMaxY > minHeight) { minHeight = childMaxY; }
+      }
+      return minHeight;
    }
 
    private get childSelected(): boolean {
