@@ -99,6 +99,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 import CmsElement from './CMSElement.vue';
 import intersect from 'path-intersection';
 import ScreenResize from './ScreenResize.vue';
@@ -106,26 +107,34 @@ import ScreenResize from './ScreenResize.vue';
 @Component({
    components: {CmsElement, ScreenResize},
    props: {
-      selected: {
-         type: Number,
-         required: true,
-      },
+    //   selected: {
+    //      type: Number,
+    //      required: true,
+    //   },
       item: {
          type: Object,
          required: true,
       },
-      zoom: {
-         type: Number,
-         required: true,
-      },
-      list: {
-         type: Array,
-         required: true,
-      },
-      screenList: {
-         type: Array,
-         required: true,
-      }
+    //   zoom: {
+    //      type: Number,
+    //      required: true,
+    //   },
+    //   list: {
+    //      type: Array,
+    //      required: true,
+    //   },
+    //   screenList: {
+    //      type: Array,
+    //      required: true,
+    //   }
+   },
+   computed: {
+       ...mapGetters('CMS', {
+           list: 'getCMSlist',
+           zoom: 'getZoom',
+           screenList: 'getScreenList',
+           selected: 'getSelected',
+       })
    }
 })
 export default class CMSScreen extends Vue {

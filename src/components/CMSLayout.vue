@@ -1,85 +1,87 @@
 <template>
-   <div 
-      class="layout"
-      @drop.stop="drop($event)"
-      @click.prevent="select({
-         id: 0,
-         type: 'none',
-      })"
-      @keyup.delete="del()"
-      tabindex="0"
-      @mousewheel.capture.stop.prevent="wheel($event)"
-      :style="{ zoom: zoom }"
-   >
-      <cms-screen 
-         v-for="(item, index) of screenList"
-         :key="index"
-         :selected="selected"
-         :item="item"
-         :zoom="zoom"
-         :list="list"
-         :screenList="screenList"
-         @select="select($event)"
-         @movement="movement($event)"
-         @resize="resize($event)"
-         @drop="drop($event)"
-         @change="changeId($event)"
-      />
-   </div>
+    <div
+        class="layout"
+        tabindex="0"
+        :style="{ zoom: zoom }"
+        @drop.stop="drop($event)"
+        @click.prevent="select({
+            id: 0,
+            type: 'none',
+        })"
+        @keyup.delete="del()"
+        @mousewheel.stop.prevent="wheel($event)"
+    >
+        <cms-screen 
+            v-for="(screen, index) of screenList"
+            :key="index"
+            :item="screen"
+            @select="select($event)"
+            @movement="movement($event)"
+            @resize="resize($event)"
+            @drop="drop($event)"
+            @change="changeId($event)"
+        />
+    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapMutations, mapGetters } from 'vuex';
-import intersect  from 'path-intersection';
 import CmsScreen from '@/components/CMSScreen.vue';
+// import intersect  from 'path-intersection';
 
 @Component({
-   components: { CmsScreen },
-   props: {
-      left: {
-         type: Number,
-         required: true,
-      }
-   },
-   computed: {
-      ...mapGetters('CMS', {
-         screenList: 'getScreenList',
-         list: 'getCMSlist',
-         addProps: 'getProp',
-         selected: 'getSelected',
-         selectedType: 'getSelectedType',
-         id: 'getID',
-         zoom: 'getZoom',
-      }),
-   },
-   methods: {
-      ...mapMutations('CMS', {
-         add2screenList: 'add2screenList',
-         changeId: 'changeScreenId',
-         deleteScreen: 'delFromScreenList',
-         clearEffect: 'clearCMSeffect',
-         deleteCMS: 'deleteCMS',
-         select: 'setSelected',
-         setID: 'setID',
-         setZoom: 'setZoom',
-         setScroll: 'setScroll',
-      }),
-   }
+    components: { CmsScreen },
+    props: { left: { type: Number, required: true } },
+    computed: {
+        ...mapGetters('CMS', {
+            id: 'getID',
+            zoom: 'getZoom',
+            screenList: 'getScreenList',
+            cmsList: 'getCMSlist',
+            // заменить или удалить
+            addProps: 'getProp',
+            // Объединить в объект
+            selected: 'getSelected',
+            selectedType: 'getSelectedType',
+        }),
+    },
+    methods: {
+        ...mapMutations('CMS', {
+            // где нибудь используется еще?
+            add2screenList: 'add2screenList',
+            // вынести целиком во vuex и вызывать в скрине!!!
+            addCMS: 'add2cmsList',
+            // нужен еще?
+            changeId: 'changeScreenId',
+            // 
+            deleteScreen: 'delFromScreenList',
+            deleteCMS: 'deleteCMS',   
+            // используетя ли еще?
+            clearEffect: 'clearCMSeffect',         
+            select: 'setSelected',
+            setID: 'setID',
+            setZoom: 'setZoom',
+            // пусто?
+            setScroll: 'setScroll',
+        }),
+    },
 })
 
 export default class LayoutBL extends Vue {
-   // описать интерфейс объекта и придать типу массива
-   private list!: any[];
-   private id!: number;
-   private setID: any;
-   private left!: number;
-   private selected!: number;
-   private selectedType!: string;
-   private zoom!: number;
-   private screenList!: any[];
-   private addProps!: any;
-   private add2screenList!: any;
+    // описать интерфейс объекта и придать типу массива
+    private screenList!: any[];          // getScreenList
+    private add2screenList!: any;       
+    private cmsList!: any[];             // getCMSlist
+    private addCMS!: any;
+    private id!: number;
+    private setID: any;
+    private left!: number;
+    private selected!: number;
+    private selectedType!: string;
+    private zoom!: number;
+    private addProps!: any;
+  
    private changeId!: any;
    private deleteScreen!: any;
    private clearEffect!: any;
@@ -111,7 +113,7 @@ export default class LayoutBL extends Vue {
       item.props.id = this.id;
       item.props.parent_id = (id === -1) ? null : id;
       for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
-      this.list.push(item);
+        this.addCMS(item);
       const focusEl: any = this.$el;
       focusEl.focus();
    }
@@ -121,11 +123,11 @@ export default class LayoutBL extends Vue {
       const type = this.selectedType;
       let index: any = null;
       const clear = (id: any) => {
-         const list = this.list.filter((el: any) => el.props.parent_id == id);
+         const list = this.cmsList.filter((el: any) => el.props.parent_id == id);
          if (list.length > 0) {
             for (const child of list) {
                clear(child.props.id);
-               const childIndex = this.list.findIndex((el: any) => el.props.id == child.props.id);
+               const childIndex = this.cmsList.findIndex((el: any) => el.props.id == child.props.id);
                this.deleteCMS(childIndex);
             }
          }
@@ -139,7 +141,7 @@ export default class LayoutBL extends Vue {
             this.clearEffect(selected);
             clear(selected);
          } else if (type === 'CMS') {
-            index = this.list.findIndex((el: any) => el.props.id == selected);
+            index = this.cmsList.findIndex((el: any) => el.props.id == selected);
             clear(selected);
             this.deleteCMS(index);
          } else {
@@ -151,10 +153,11 @@ export default class LayoutBL extends Vue {
          type: 'none',
       });
    }
-
+    // вынести иил перенести в другой компонент или разбить на 2 функции
    private movement(payload: any): void {
+    //    console.log(payload);
       const type = payload.type;
-      const arr = (type==='Screen') ? this.screenList : this.list;
+      const arr = (type==='Screen') ? this.screenList : this.cmsList;
       const e = payload.event;
       let parentOffsetX: number = 0;
       let parentOffsetY: number = 0;
@@ -193,7 +196,7 @@ export default class LayoutBL extends Vue {
          y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
          if (y < 0) { y = 0; }
          if (maxY) { if (y > maxY) { y = maxY} }
-         console.log(x + ' : ' + maxX);
+        //  console.log(x + ' : ' + maxX);
          arr[index].params.X = x;
          arr[index].params.Y = y;
       }
@@ -207,6 +210,7 @@ export default class LayoutBL extends Vue {
       window.addEventListener('mouseup', clean);
    }
 
+    // однозначно перенести в скрин
    private resize(payload: any): void {
       const e: MouseEvent = payload.event;
       // console.log(payload);

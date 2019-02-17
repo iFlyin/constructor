@@ -3,8 +3,9 @@ module.exports = {
   configureWebpack: {
     devtool: 'source-map'
   },
-  publicPath: '/constructor/',
-
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/constructor/'
+    : '/',
   css: {
     extract: false
   },

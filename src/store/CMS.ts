@@ -1,5 +1,6 @@
 import http from './axios';
 import intersect from 'path-intersection';
+import { weblook, webeffect } from './localhost';
 
 export default {
    namespaced: true,
@@ -219,6 +220,9 @@ export default {
       add2screenList(state: any, payload: any): void {
          state.screenList.push(payload);
       },
+      add2cmsList(state: any, payload: any): void {
+          state.cmsList.push(payload);
+      },
       delFromScreenList(state: any, payload: any): void {
          state.screenList.splice(payload, 1);
       },
@@ -390,7 +394,6 @@ export default {
          })(null);
          // console.log(state.cmsList)
       }
-
    },
    actions: {
       asyncGetLook: async (context: any) => {
@@ -399,6 +402,8 @@ export default {
             context.commit('saveWebLook', data);
          } catch(err) {
             console.log(err);
+            context.commit('saveWebLook', weblook);
+            console.log(weblook);
          }
       },
       asyncGetEffect: async (context: any) => {
@@ -407,6 +412,7 @@ export default {
             context.commit('saveWebEffect', data);
          } catch (err) {
             console.log(err);
+            context.commit('saveWebEffect', webeffect);
          }
       },
       asyncGetID: async (context: any) => {

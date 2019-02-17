@@ -1,181 +1,156 @@
 <template>
-   <div
-      class="layout-cms"
-      :class="{'layout-cms-active': selected == item.props.id}"
-      :style="{
-         'z-index': (item.props.id == selected) ? '1000000' : '',
-         left: (item.params.X) + 'px',
-         top: item.params.Y + 'px',
-         width: item.params.width + 'px',
-         'border-width': 2 / zoom + 'px',
-      }"
-      @click.stop.prevent="$emit('select', {
-         id: item.props.id,
-         type: 'CMS',
-      })"
-   >
-      <div class="layout-cms-wrapper">
-         <div class="layout-cms-content">
-            <div 
-               class="layout-cms-header"
-               @drop.stop
-               @mousedown.stop.prevent="$emit('movement', {
-                  event: $event,
-                  id: item.props.id,
-               })"
-            >
-               {{weblookName(item.props.look)}}
-            </div>   
-            <div 
-               class="layout-cms-canvas"
-               @drop.stop="$emit('drop', {
-                  event: $event,
-                  id: item.props.id,
-               })"
-               @mousedown.stop
-            >
-               <div class="layout-cms-row">
-                  <div 
-                     class="layout-cms-id"
-                     :style="{'border-width' : 1 / zoom + 'px'}"
-                  >{{item.props.id}}</div>
-                  <div class="layout-cms-name">{{item.props.name}}</div>
-               </div>
-               <div class="layout-cms-row">
-                  <el-select 
-                     :options="webEffect"
-                     :selected="item.props.effect"
-                     :label="'Эффект'"
-                     :name="'name'"
-                     @select="setEffect({
-                        v: $event,
-                        id: item.props.id,
-                     }), effect = $event"
-                  />
-               </div>
+    <div 
+        :class="{'layout-cms': true, 'layout-cms-active': isSelected}" 
+        :style="layoutCMSstyle"
+        @click.stop.prevent="select({ id: item.props.id, type: 'CMS' })"
+    >
+        <div class="layout-cms-header" @mousedown.stop="move($event)" v-html="lookName(item.props.look)"/>
+        <div class="layout-cms-content">
+            <div class="layout-cms-row">
+                <div class="layout-cms-id" :style="{'border-width' : 1 / zoom + 'px'}" v-html="item.props.id"/>
+                <div class="layout-cms-name" v-html="item.props.name"/>
             </div>
-         </div>
-      </div>
-   
-   </div>
+            <div class="layout-cms-row">
+                <!-- переписать на стандартный селект!!! -->
+                <el-select 
+                    :options="webEffect"
+                    :selected="item.props.effect"
+                    :label="'Эффект'"
+                    :name="'name'"
+                    @select="setEffect({
+                               v: $event,
+                               id: item.props.id,
+                    }), effect = $event"
+                />
+            </div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters, mapMutations } from 'vuex';
+// заменить на универсальный!!!
 import ElSelect from '@/components/libs/Select.vue';
 
+// вынести в файл интерфейсов
+interface cmsStyle {
+    'z-index': string;
+    'top': string;
+    'left': string;
+    'width': string;
+    'border-width': string;
+}
+
 @Component({
-   components: { ElSelect },
-   props: {
-      item: {
-         type: Object,
-         required: true,
-      },
-      zoom: {
-         type: Number,
-         required: true,
-      },
-      list: {
-         type: Array,
-         required: true,
-      },
-      screenList: {
-         type: Array,
-         required: true,
-      }
-   },
-   computed: {...mapGetters('CMS', {
-      webEffect: 'getWebEffect',
-      selected: 'getSelected',
-      weblookName: 'getLookName',
-   })},
-   methods: {...mapMutations('CMS', {setEffect: 'setCMSeffect'})}
+    components: { ElSelect },
+    props: { item: { type: Object, required: true, } },
+    computed: {
+        ...mapGetters('CMS', {
+            zoom: 'getZoom',
+            selected: 'getSelected',
+            lookName: 'getLookName',
+            // перенести или нет
+            webEffect: 'getWebEffect',
+        }),
+    },
+    methods: {
+        ...mapMutations('CMS', {
+            setEffect: 'setCMSeffect',
+            select: 'setSelected',
+        }),
+    },
 })
 export default class CMSElement extends Vue {
-   private editable = false;
-   private item!: any;
-   private webEffect!: any[];
-   private setEffect!: any;
+    // описать интерфейс СMS!!!
+    public item!: any;
+    public zoom!: number;
+    // переделать объект селекта и описать его интерфейс!!!
+    public selected!: number;
+
+    // описать эффекты и вынести их дальше!!!
+    public webEffect!: any[];
+    
+    // описать функции...
+    public setEffect!: any;
+    public select!: any;
+    public lookName!: any;
+
+    public get isSelected(): boolean { return this.item.props.id === this.selected; }
+    public get layoutCMSstyle(): cmsStyle {
+        return {
+            'z-index': this.item.props.id === this.selected
+                ? '1000000'
+                : '',
+            'top': this.item.params.Y + 'px',
+            'left': this.item.params.X + 'px',
+            'width': this.item.params.width + 'px',
+            'border-width': 2 / this.zoom + 'px',
+        }
+    }
+
+    public move(e: MouseEvent): void { this.$emit('movement', { event: e, id: this.item.props.id }); }
 }
 </script>
 
-<style lang="scss" scoped>
-   .layout-cms {
-      border-style: solid;
-      border-color: #2c3e50;
-      background-color: #2c3e50;
-      box-sizing: border-box;
-      z-index: 100;
-      position: absolute;
-      border-radius: 10px;
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+<style lang="scss" scoped> 
+.layout-cms {
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 100;
+    background-color: #2c3e50;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
 
-      &-wrapper {
-         width: 100%;
-         height: 100%;
-         position: relative;
-      }
-      
-      &-content {
-         border-radius: 10px;
-         top: 0;
-         left: 0;
-         height: 100%;
-         width: 100%;
-         display: flex;
-         flex-flow: column nowrap;
-      }
-
-      &-header {
-         min-height: 40px;
-         padding: 10px;
-         width: 100%;
-         box-sizing: border-box;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         user-select: none;
-         cursor: move;
-      }
-
-      &-canvas {
-         flex: 1 1 auto;
-         overflow: auto;
-         position: relative;
-      }
-
-      &-active {
+    &-active {
         border-color: red !important;
-      }
+    }
 
-      &-row {
-         display: flex;
-         justify-content: space-between;
-         max-width: 100%;
-         overflow: hidden;
-         // border-top: 1px solid #fff;
-         &:first-child{
+    &-header {
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        min-height: 40px;
+        max-height: 80px;
+        padding: 10px;
+        cursor: move;
+        user-select: none;
+    }
+      
+    &-content {
+        display: flex;
+        flex-flow: column nowrap;
+    }
+
+    &-row {
+        overflow: hidden;
+        display: flex;
+         
+        &:first-child{
             background-color: #fff;
             color: #2c3e50;
-         }
-      }
+        }
+    }
 
-      &-id {
-         padding: 5px;
-         border-right: 2px solid #2c3e50;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-      }
+    &-id {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        border-style: solid;
+        border-color: #2c3e50;
+    }
 
-      &-name {
-         padding: 5px;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-      }
-   }
+    &-name {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;  
+    }
+
+}
 </style>
-
