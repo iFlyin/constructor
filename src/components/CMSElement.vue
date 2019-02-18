@@ -4,7 +4,11 @@
         :style="layoutCMSstyle"
         @click.stop.prevent="select({ id: item.props.id, type: 'CMS' })"
     >
-        <div class="layout-cms-header" @mousedown.stop="move($event)" v-html="lookName(item.props.look)"/>
+        <div 
+            class="layout-cms-header" 
+            @mousedown.stop="movement($event, item.props.id)" 
+            v-html="lookName(item.props.look)"
+        />
         <div class="layout-cms-content">
             <div class="layout-cms-row">
                 <div class="layout-cms-id" :style="{'border-width' : 1 / zoom + 'px'}" v-html="item.props.id"/>
@@ -47,17 +51,21 @@ interface cmsStyle {
     props: { item: { type: Object, required: true, } },
     computed: {
         ...mapGetters('CMS', {
+            cmsList: 'getCMSlist',
+            screenList: 'getScreenList',
             zoom: 'getZoom',
             selected: 'getSelected',
             lookName: 'getLookName',
             // перенести или нет
             webEffect: 'getWebEffect',
+            panel: 'getPanel'
         }),
     },
     methods: {
         ...mapMutations('CMS', {
             setEffect: 'setCMSeffect',
             select: 'setSelected',
+            setXY: 'setXY',
         }),
     },
 })
@@ -67,6 +75,7 @@ export default class CMSElement extends Vue {
     public zoom!: number;
     // переделать объект селекта и описать его интерфейс!!!
     public selected!: number;
+    public panel!: any;
 
     // описать эффекты и вынести их дальше!!!
     public webEffect!: any[];
@@ -89,11 +98,51 @@ export default class CMSElement extends Vue {
         }
     }
 
-    public move(e: MouseEvent): void { this.$emit('movement', { event: e, id: this.item.props.id }); }
+    private movement(e: any, id: any): void {
+        const that = this;
+        const layout = this.$parent.$parent.$el;
+        const parent_id = this.item.props.parent_id === null
+            ? -1
+            : this.item.props.parent_id;
+        const index = this.cmsList.findIndex(item => item.props.id === id);
+        const parentIndex = this.screenList.findIndex(el => el.props.id === parent_id);
+        const parent = this.screenList[parentIndex];
+        const parentOffsetX: number = parent.params.X;
+        const parentOffsetY: number = parent.params.Y + 40;
+        const scrollX = layout.scrollLeft;
+        const scrollY = layout.scrollTop;
+        const offsetX = e.offsetX;
+        const offsetY = e.offsetY;
+        
+        // убрать хардкод
+        const maxX = parent.params.width - 170;
+        const maxY = parent.params.height - 180;
+      
+        function move(e: MouseEvent): void {
+            let x = (e.clientX - offsetX - that.panel.left) / that.zoom  + scrollX - parentOffsetX;
+            if (x < 0) { x = 0; }
+            if (maxX) { if (x > maxX) { x = maxX} }
+            let y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
+            if (y < 0) { y = 0; }
+            if (maxY) { if (y > maxY) { y = maxY} }
+            // заменить на seter vuex
+            that.cmsList[index].params.X = x;
+            that.cmsList[index].params.Y = y;
+        }
+
+        function clean(this: any, e: MouseEvent): void {
+            this.removeEventListener('mousemove', move);
+            this.removeEventListener('mouseup', clean);
+        }
+
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', clean);
+    }
 }
 </script>
 
-<style lang="scss" scoped> 
+<style lang="scss" scoped>
+
 .layout-cms {
     box-sizing: border-box;
     position: absolute;
@@ -153,4 +202,5 @@ export default class CMSElement extends Vue {
     }
 
 }
+
 </style>

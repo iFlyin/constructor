@@ -6,7 +6,6 @@
          class="resizer-grid resizer-top-left" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['top', 'left'],
          })"
          :style="{
@@ -21,7 +20,6 @@
          class="resizer-grid resizer-top" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['top']
          })"
          :style="{
@@ -36,7 +34,6 @@
          class="resizer-grid resizer-top-right"
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['top', 'right']
          })"
          :style="{
@@ -51,7 +48,6 @@
          class="resizer-grid resizer-left" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['left']
          })"
          :style="{
@@ -66,7 +62,6 @@
          class="resizer-grid resizer-right" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['right']
          })"
          :style="{
@@ -81,7 +76,6 @@
          class="resizer-grid resizer-bottom-left" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['bottom', 'left']
          })"
          :style="{
@@ -96,7 +90,6 @@
          class="resizer-grid resizer-bottom" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['bottom']
          })"
          :style="{
@@ -111,7 +104,6 @@
          class="resizer-grid resizer-bottom-right" 
          @mousedown.stop="$emit('resize', {
             event: $event,
-            id: id,
             direction: ['bottom', 'right']
          })"
          :style="{
@@ -128,14 +120,9 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-@Component({
-   props: { id: {type: Number, required: true }, }, 
-   computed: { ...mapGetters('CMS', { zoom: 'getZoom' }) }
-})
-export default class SelectResize extends Vue { 
-   private zoom!: number; 
-   private id!: number;
-}
+@Component({computed: { ...mapGetters('CMS', { zoom: 'getZoom' })}})
+
+export default class SelectResize extends Vue { private zoom!: number; }
 </script>
 
 <style lang="scss" scoped>

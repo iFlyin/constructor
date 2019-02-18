@@ -191,8 +191,8 @@ export default {
          const offsetY = (mouseY / realHeight) * 100;
 
          if (event.deltaY > 0) { 
-            if (clearZoom === 2) {
-               state.zoom = 0.2
+            if (clearZoom === 4) {
+               state.zoom = 0.4
             } else {
                state.zoom -= 0.1;
             }
@@ -403,7 +403,7 @@ export default {
          } catch(err) {
             console.log(err);
             context.commit('saveWebLook', weblook);
-            console.log(weblook);
+            // console.log(weblook);
          }
       },
       asyncGetEffect: async (context: any) => {
@@ -450,7 +450,7 @@ export default {
                   id: obj.props.id,
                })
             }
-            console.log(data);
+            // console.log(data);
          } catch (err) {
             console.log(err);
          }
