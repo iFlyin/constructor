@@ -2,7 +2,9 @@
     <div
         class="layout"
         tabindex="0"
-        :style="{ zoom: zoom }"
+        :style="{ 
+           zoom: zoom 
+           }"
         @drop.stop="drop($event)"
         @click.prevent="select({
             id: 0,
@@ -37,7 +39,6 @@ import CmsScreen from '@/components/CMSScreen.vue';
             zoom: 'getZoom',
             screenList: 'getScreenList',
             cmsList: 'getCMSlist',
-            // заменить или удалить
             // Объединить в объект
             selected: 'getSelected',
             selectedType: 'getSelectedType',
@@ -47,11 +48,6 @@ import CmsScreen from '@/components/CMSScreen.vue';
         ...mapMutations('CMS', {
             // где нибудь используется еще?
             add2screenList: 'add2screenList',
-            // вынести целиком во vuex и вызывать в скрине!!!
-            
-            // нужен еще?
-            changeId: 'changeScreenId',
-            // 
             deleteScreen: 'delFromScreenList',
             deleteCMS: 'deleteCMS',   
             // используетя ли еще?

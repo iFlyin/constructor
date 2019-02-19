@@ -76,6 +76,8 @@ export default class CMSElement extends Vue {
     // переделать объект селекта и описать его интерфейс!!!
     public selected!: number;
     public panel!: any;
+    public cmsList!: any;
+    public screenList!: any;
 
     // описать эффекты и вынести их дальше!!!
     public webEffect!: any[];
@@ -104,8 +106,8 @@ export default class CMSElement extends Vue {
         const parent_id = this.item.props.parent_id === null
             ? -1
             : this.item.props.parent_id;
-        const index = this.cmsList.findIndex(item => item.props.id === id);
-        const parentIndex = this.screenList.findIndex(el => el.props.id === parent_id);
+        const index = this.cmsList.findIndex((item: any) => item.props.id === id);
+        const parentIndex = this.screenList.findIndex((el: any) => el.props.id === parent_id);
         const parent = this.screenList[parentIndex];
         const parentOffsetX: number = parent.params.X;
         const parentOffsetY: number = parent.params.Y + 40;
@@ -113,18 +115,23 @@ export default class CMSElement extends Vue {
         const scrollY = layout.scrollTop;
         const offsetX = e.offsetX;
         const offsetY = e.offsetY;
+
+        const el: any = this.$el;
+        const cmsHeight = el.offsetHeight;
+        // console.log(cmsHeight);
         
-        // убрать хардкод
-        const maxX = parent.params.width - 170;
-        const maxY = parent.params.height - 180;
+        // 4 значение бордера!!!
+        const maxX = parent.params.width - this.item.params.width - (4 / this.zoom);
+        // расчитать высоту!
+        const maxY = (parent.params.height - 40) - cmsHeight - (5 / this.zoom);
       
         function move(e: MouseEvent): void {
             let x = (e.clientX - offsetX - that.panel.left) / that.zoom  + scrollX - parentOffsetX;
             if (x < 0) { x = 0; }
-            if (maxX) { if (x > maxX) { x = maxX} }
+            if (x > maxX) { x = maxX}
             let y = (e.clientY - 30 - offsetY) / that.zoom + scrollY - parentOffsetY;
             if (y < 0) { y = 0; }
-            if (maxY) { if (y > maxY) { y = maxY} }
+            if (y > maxY) { y = maxY}
             // заменить на seter vuex
             that.cmsList[index].params.X = x;
             that.cmsList[index].params.Y = y;

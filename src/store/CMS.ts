@@ -1,6 +1,6 @@
 import http from './axios';
 import intersect from 'path-intersection';
-import { weblook, webeffect } from './localhost';
+// import { weblook, webeffect } from './localhost';
 
 export default {
    namespaced: true,
@@ -191,8 +191,8 @@ export default {
          const offsetY = (mouseY / realHeight) * 100;
 
          if (event.deltaY > 0) { 
-            if (clearZoom === 4) {
-               state.zoom = 0.4
+            if (clearZoom === 3) {
+               state.zoom = 0.3
             } else {
                state.zoom -= 0.1;
             }
@@ -367,6 +367,7 @@ export default {
       clearAll(state: any) {
          state.systems_id = 'New system';
          state.selected = 0;
+         state.zoom = 1;
          state.selectedType = 'none';
          state.screenList = new Array();
          state.cmsList = new Array();
@@ -402,7 +403,7 @@ export default {
             context.commit('saveWebLook', data);
          } catch(err) {
             console.log(err);
-            context.commit('saveWebLook', weblook);
+            // context.commit('saveWebLook', weblook);
             // console.log(weblook);
          }
       },
@@ -412,7 +413,7 @@ export default {
             context.commit('saveWebEffect', data);
          } catch (err) {
             console.log(err);
-            context.commit('saveWebEffect', webeffect);
+            // context.commit('saveWebEffect', webeffect);
          }
       },
       asyncGetID: async (context: any) => {
