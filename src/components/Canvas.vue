@@ -31,8 +31,8 @@ export default class Canvas extends Vue {}
 
 <style lang="scss" scoped>
    #canvas {
-      background: linear-gradient( #bbb, transparent 1px), linear-gradient( 90deg, #bbb, transparent 1px);
-      background-size: 15px 15px;
+      background: linear-gradient( #bbbbbb, transparent .6px), linear-gradient( 90deg, #bbbbbb, transparent .6px);
+      background-size: 10px 10px;
       background-position: left top;
       background-attachment: fixed;
       overflow: auto;

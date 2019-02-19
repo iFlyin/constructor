@@ -1,6 +1,7 @@
 <template>
    <div>
-   <input type="date" :value="val" :disabled="(val === null)" @input="$emit('change', $event.target.value)">
+      <input type="date" :value="val" :disabled="(val === '')" @input="$emit('change', $event.target.value)">
+      <!-- {{check}} -->
    </div>
 </template>
 
@@ -10,8 +11,8 @@ import { Vue, Component } from 'vue-property-decorator';
 export default class DatePicker extends Vue {
    private val!: any;
 
-   // private check(e: any): any{
-   //    return console.log(e);
-   // }
+   private get check(): any{
+      return console.log(this.val);
+   }
 } 
 </script>

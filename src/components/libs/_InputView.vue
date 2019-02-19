@@ -1,6 +1,10 @@
 <template>
    <div class="input-view">
-      <label class="input-label">{{label}}: </label>
+      <label 
+         class="input-label" 
+         v-html="label + ': '"
+         :style="{'width': labelWidth + 'px'}"
+      />
       <components class="input" :is="component" :val="value" @change="setValue({
          id: cms.props.id,
          key: label,
@@ -28,7 +32,7 @@ import ElSelect from './ElSelect.vue';
       },
       labelWidth: {
          type: Number,
-         default: 240,
+         default: 120,
       },
       component: {
          type: String,
@@ -50,13 +54,14 @@ export default class InputView extends Vue {
 
    private get value(): any {
       if (this.cms.props) {
+         // console.log(this.label + ' : ' + this.cms.props[this.label]);
          if( this.label === 'look') {
             return this.lookName(this.cms.props[this.label]);
          } else if ( this.label === 'effect') {
             return this.effectName(this.cms.props[this.label]);
          }
          return this.cms.props[this.label];
-      } else return null;
+      } else return '';
    }
 
    private console(v: any) {
@@ -74,18 +79,24 @@ export default class InputView extends Vue {
       align-items: center;
       box-sizing: border-box;
       padding: 5px 20px;
-      border: 1px dashed grey;
+      border-bottom: 1px solid grey;
       margin: 5px;
    }
 
    .input-label {
       box-sizing: border-box;
       padding: 5px 0;
+      display: flex;
    }
 
    .input {
       box-sizing: border-box;
       padding: 5px 0;
+      flex: 1 1 auto;
+      display: flex;
+      justify-content: flex-start;
+      text-align: left;
+      max-width: 100%;
    }
 
 </style>

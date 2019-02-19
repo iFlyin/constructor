@@ -285,6 +285,7 @@ export default class CMSScreen extends Vue {
          console.log(err);
          return;
       }
+      // console.log(item)
       const centerX = item.params.width/2;
       const centerY = item.params.height/2;
       let posX = e.offsetX / this.zoom - centerX;
@@ -301,7 +302,8 @@ export default class CMSScreen extends Vue {
       this.setID(this.id + 1);
       item.props.id = this.id;
       item.props.parent_id = (id === -1) ? null : id;
-      for (const key in this.addProps) { item.props[key] = this.addProps[key]; }
+      // console.log(this.addProps)
+      for (const key in this.addProps) { item.props[key] = this.addProps[key];}
       this.addCMS(item);
       const focusEl: any = this.$el;
       focusEl.focus();

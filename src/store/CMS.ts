@@ -127,19 +127,19 @@ export default {
          },
       },
       prop_default: {
-         d_start: '',
-         f_fin: '',
-         d_modif: '',
-         name: 'Имя компонента',
-         fullname: 'Имя компонента',
-         description: '',
-         group_number: '',
-         db_function_name: '',
-         db_function_params: '',
-         fields_list: '',
-         gui_icon: '',
-         add_params: '',
-         check_right: '',
+         d_start: null,
+         f_fin: null,
+         d_modif: null,
+         name: 'Новый CMS',
+         fullname: null,
+         description: null,
+         group_number: null,
+         db_function_name: null,
+         db_function_params: null,
+         fields_list: null,
+         gui_icon: null,
+         add_params: null,
+         check_right: null,
       },
    },
    getters: {
@@ -182,13 +182,13 @@ export default {
       setZoom(state: any, payload: any): void {
          const clearZoom = Math.round((state.zoom * 10));
          const event = payload.e;
-         const layout = payload.el;
-         const realWidth = layout.clientWidth * state.zoom;
-         const realHeight = layout.clientHeight * state.zoom;
-         const mouseX = event.clientX - state.panel.left;
-         const mouseY = event.clientY - 30;
-         const offsetX = (mouseX / realWidth) * 100;
-         const offsetY = (mouseY / realHeight) * 100;
+         // const layout = payload.el;
+         // const realWidth = layout.clientWidth * state.zoom;
+         // const realHeight = layout.clientHeight * state.zoom;
+         // const mouseX = event.clientX - state.panel.left;
+         // const mouseY = event.clientY - 30;
+         // const offsetX = (mouseX / realWidth) * 100;
+         // const offsetY = (mouseY / realHeight) * 100;
 
          if (event.deltaY > 0) { 
             if (clearZoom === 3) {
@@ -202,18 +202,18 @@ export default {
                state.zoom = 1.5;
             } else {
                state.zoom += 0.1;
-               const newClientW = (realWidth / state.zoom ) / 2;
-               const newClientH = (realHeight / state.zoom ) / 2;
-               const centerX = layout.clientWidth / 100 * offsetX;
-               const centerY = layout.clientHeight / 100 * offsetY;
-               const scrollX = (centerX - newClientW) > 0
-                  ? centerX - newClientW
-                  : 0;
-               const scrollY = (centerY - newClientH) > 0
-                  ? centerY - newClientH
-                  : 0;
-               layout.scrollLeft += scrollX;
-               layout.scrollTop += scrollY;
+               // const newClientW = (realWidth / state.zoom ) / 2;
+               // const newClientH = (realHeight / state.zoom ) / 2;
+               // const centerX = layout.clientWidth / 100 * offsetX;
+               // const centerY = layout.clientHeight / 100 * offsetY;
+               // const scrollX = (centerX - newClientW) > 0
+               //    ? centerX - newClientW
+               //    : 0;
+               // const scrollY = (centerY - newClientH) > 0
+               //    ? centerY - newClientH
+               //    : 0;
+               // layout.scrollLeft += scrollX;
+               // layout.scrollTop += scrollY;
             }
          }
       },

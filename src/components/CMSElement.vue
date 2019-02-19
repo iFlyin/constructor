@@ -197,8 +197,9 @@ export default class CMSElement extends Vue {
         justify-content: center;
         align-items: center;
         padding: 5px;
-        border-style: solid;
-        border-color: #2c3e50;
+        // border-style: solid;
+        // border-color: #2c3e50;
+        border-right: 1px solid #2c3e50;
     }
 
     &-name {
