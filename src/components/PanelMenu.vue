@@ -21,14 +21,11 @@
             </ul>
          </div>
          <div class="menu-container">
-            <input type="button" class="menu-text-button" value="Настройки" @mouseover="active='settings'">
-            <!-- <ul class="menu-list" v-show="menuActive">
-               <li class="menu-list-item">Новый проект</li>
-               <li class="menu-list-item">Загрузить проект</li>
-               <li class="menu-list-item">Сохранить в файл</li>
-               <li class="menu-list-item">Загрузить из файла</li>
-               <li class="menu-list-item">Выход</li>
-            </ul> -->
+            <input type="button" class="menu-text-button" value="Правка" @mouseover="active='settings'">
+            <ul class="menu-list" v-show="menuActive && (active==='settings')">
+               <li class="menu-list-item">Отменить</li>
+               <li class="menu-list-item">Повторить</li>
+            </ul>
          </div>
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Вид" @mouseover="active='view'">

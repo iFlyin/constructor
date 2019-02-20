@@ -259,7 +259,7 @@ export default {
          const fixParentID = (parentID) ? parentID : -1; 
          const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
-         console.log('id: ' + payload.id + ' p_id: ' + parentID);
+         console.log('name: ' + CMSpath.props.name + ' p_id: ' + parentID);
          
          const parent = {
             X: parentPath.params.X,
@@ -288,6 +288,7 @@ export default {
          
          const effect = CMSpath.props.effect;
          const check = state.effect2screen.hasOwnProperty(effect);
+         // добавить луки и add params!!!
 
          const childIndex = state.screenList.findIndex((el: any) => el.props.id === payload.id);
 
