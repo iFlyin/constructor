@@ -50,6 +50,7 @@ export default {
          10: 'Статичная страница',
          21: 'Экран дерево-поля ',
          22: 'Экран поиска документа',
+         24: 'Внутренний фрэйм',
          27: 'Экран просмотра документа',
       },
       prop_type: {
@@ -258,6 +259,7 @@ export default {
          const fixParentID = (parentID) ? parentID : -1; 
          const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
+         console.log('id: ' + payload.id + ' p_id: ' + parentID);
          
          const parent = {
             X: parentPath.params.X,
