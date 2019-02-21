@@ -19,7 +19,7 @@ export default {
          },
          {
             uuid: 'b8a99645-0bd6-4052-a0f8-aaf612328274',
-            name: '"СИСЗЛ"',
+            name: 'СИСЗЛ',
          },
          {
             uuid: 'fe0b9fbc-0b8b-4a3a-96ee-332ae84b5fa8',
@@ -266,7 +266,7 @@ export default {
             Y: parentPath.params.Y,
             W: parentPath.params.width,
             H: parentPath.params.height,
-         }
+         };
 
          const CMS = {
             X: CMSpath.params.X + parent.X,
@@ -279,7 +279,7 @@ export default {
             X: CMS.X + (CMS.W /2),
             Y: CMS.Y + (CMS.H /2),
          };
-         
+
          const path1 = rectConstructor(parent.X, parent.Y, parent.W, parent.H);
          const path2 = lineConstructor(CMScenter.X, CMScenter.Y, CMScenter.X, CMScenter.Y + 10000);
 
@@ -296,10 +296,10 @@ export default {
             Y = state.screenList[childIndex].params.Y;
             clear(payload.id);
          }
-         
+
          if (check) {
             const newScreen = {
-               props: { 
+               props: {
                   id: payload.id,
                   name: state.effect2screen[effect],
                },
@@ -314,14 +314,14 @@ export default {
             state.screenList.push(newScreen);
          }
 
-         payload.callback();
+         if (payload.callback) { payload.callback(); }
 
          function rectConstructor(x: number, y: number, w: number, h: number): string {
             return `M${x},${y}L${x + w},${y}L${x + w},${y + h}L${x},${y + h}Z`;
          }
 
          function lineConstructor(x1: number, y1: number, x2: number, y2: number): string {
-            return `M${x1},${y1}L${x2},${y2}`
+            return `M${x1},${y1}L${x2},${y2}`;
          }
 
          function clear (id: any) {
@@ -399,7 +399,19 @@ export default {
             }
          })(null);
          // console.log(state.cmsList)
-      }
+      },
+      saveToFile(state: any, payload: any) {
+         const json = {
+            cms: state.cmsList,
+            screen: state.screenList,
+         };
+         const el = payload;
+         const filename = 'obj.json';
+         const blob = new Blob([JSON.stringify(json)], { type: 'application/json' });
+         el.setAttribute('href', window.URL.createObjectURL(blob));
+         el.setAttribute('download', filename);
+         el.dataset.downloadurl = ['application/json', filename, window.URL.createObjectURL(blob)].join(':');
+      },
    },
    actions: {
       asyncGetLook: async (context: any) => {

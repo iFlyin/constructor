@@ -4,8 +4,11 @@
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Файл" @mouseover="active='file'">
             <ul class="menu-list" v-show="menuActive && (active==='file')">
-               <li class="menu-list-item" @click="$emit('newproject')">Новый проект</li>
-               <li class="menu-list-item" @click.stop>Загрузить проект
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" @click="$emit('newproject')">Новый проект</a>
+               </li>
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" @click.stop>Загрузить проект</a>
                   <ul class="menu-side-list">
                      <li 
                         v-for="system of systemsList"
@@ -15,16 +18,29 @@
                      >{{system.name}}</li>
                   </ul>
                </li>
-               <li class="menu-list-item">Сохранить в файл</li>
-               <li class="menu-list-item">Загрузить из файла</li>
-               <li class="menu-list-item" @click="$router.push({ path: '/' })">Выход</li>
+               <li class="menu-list-item" >
+                  <a class="menu-list-item-link" @click="save($event.target)">Сохранить</a>
+               </li>
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" @click="save()">Сохранить в файл</a>
+               </li>
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" @click="save()">Загрузить из файла</a>
+               </li>
+               <li class="menu-list-item" >
+                  <a class="menu-list-item-link" @click="$router.push({ path: '/' })">Выход</a>
+               </li>
             </ul>
          </div>
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Правка" @mouseover="active='settings'">
             <ul class="menu-list" v-show="menuActive && (active==='settings')">
-               <li class="menu-list-item" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">Отменить</li>
-               <li class="menu-list-item" :style="{ cursor: canRedo ? 'pointer' : 'not-allowed' }" @click="redo()">Повторить</li>
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">Отменить</a>
+               </li>
+               <li class="menu-list-item">
+                  <a class="menu-list-item-link" :style="{ cursor: canRedo ? 'pointer' : 'not-allowed' }" @click="redo()">Повторить</a>
+               </li>
             </ul>
          </div>
          <div class="menu-container">
@@ -40,9 +56,13 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import { history } from '@/mixins';
-@Component({mixins: [history], computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})}})
+@Component({ 
+   mixins: [history], 
+   computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})},
+   methods: {...mapMutations('CMS', {save: 'saveToFile'})}
+})
 export default class MainMenu extends Vue { 
    public menuActive: boolean = false;
    public active: string = '';
@@ -82,6 +102,7 @@ export default class MainMenu extends Vue {
 
       &-list {
          position: absolute;
+         box-sizing: border-box;
          top: 30px;
          left: 0;
          width: 160px;
@@ -94,25 +115,36 @@ export default class MainMenu extends Vue {
          box-shadow: 2px 2px 8px rgba(0, 0, 0, .33);
 
          & a {
-            color: #fff;
-            text-decoration: none;
+            
          }
 
          &-item {
             position: relative;
-            user-select: none;
-            cursor: pointer;
-            padding: 10px 25px;
-            display: flex;
-            flex-flow: row nowrap;
-            justify-content: flex-start;
-            white-space: nowrap;
-
+            
             &:hover {
-               background-color: grey;
 
                & .menu-side-list {
                   display: block;
+               }
+            }
+
+            &-link {
+               box-sizing: border-box;
+               // background-color: red !important;
+               width: 100%;
+               height: 100%;
+               padding: 10px 25px;
+               display: flex;
+               flex-flow: row nowrap;
+               justify-content: flex-start;
+               white-space: nowrap;
+               user-select: none;
+               cursor: pointer;
+               color: #fff;
+               text-decoration: none;
+
+               &:hover {
+                  background-color: grey;
                }
             }
          }
