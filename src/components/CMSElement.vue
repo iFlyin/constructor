@@ -22,8 +22,9 @@
                     :label="'Эффект'"
                     :name="'name'"
                     @select="setEffect({
-                               v: $event,
-                               id: item.props.id,
+                        v: $event,
+                        id: item.props.id,
+                        callback: saveSnapshot,
                     }), effect = $event"
                 />
             </div>
@@ -34,6 +35,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters, mapMutations } from 'vuex';
+import { snapshot} from '@/mixins';
 // заменить на универсальный!!!
 import ElSelect from '@/components/libs/Select.vue';
 
@@ -49,6 +51,7 @@ interface cmsStyle {
 @Component({
     components: { ElSelect },
     props: { item: { type: Object, required: true, } },
+    mixins: [ snapshot ],
     computed: {
         ...mapGetters('CMS', {
             cmsList: 'getCMSlist',
@@ -78,6 +81,8 @@ export default class CMSElement extends Vue {
     public panel!: any;
     public cmsList!: any;
     public screenList!: any;
+
+    public saveSnapshot!: any;
 
     // описать эффекты и вынести их дальше!!!
     public webEffect!: any[];
@@ -140,6 +145,7 @@ export default class CMSElement extends Vue {
         function clean(this: any, e: MouseEvent): void {
             this.removeEventListener('mousemove', move);
             this.removeEventListener('mouseup', clean);
+            that.saveSnapshot();
         }
 
         window.addEventListener('mousemove', move);

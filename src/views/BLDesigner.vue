@@ -1,6 +1,9 @@
 <template>
   <div id="constructor">
-    <main-menu @newproject="initialize()" @initByID="asyncGetCMSbyId($event)"/>
+    <main-menu @newproject="initialize()" @initByID="asyncGetCMSbyId({
+      id: $event,
+      callback: clearHistory,
+    })"/>
     <panel-left :width="panel.left" @resize="panelResize({dir: 'left', val: $event})" v-if="init">
       <accordion :list="[
         {
@@ -25,6 +28,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters, mapActions, mapMutations} from 'vuex';
+import { history, snapshot } from '@/mixins';
 import MainMenu from '@/components/PanelMenu.vue';
 import PanelLeft from '@/components/PanelLeft.vue';
 import PanelRight from '@/components/PanelRight.vue';
@@ -35,6 +39,7 @@ import LayoutBL from '@/components/CMSLayout.vue';
 
 @Component ({
   components: { MainMenu, PanelLeft, PanelRight, PanelFooter, AppCanvas, Accordion, LayoutBL },
+  mixins: [ history, snapshot ],
   computed: {
     ...mapGetters('CMS', {
       weblook: 'getWebLook', 
@@ -69,6 +74,8 @@ export default class UMLDesigner extends Vue {
   private clearAll!: any;
   private init!: boolean;
   private panelResize!: any;
+  private clearHistory!: any;
+  private saveSnapshot!: any;
 
   private get components(): any[] {
     const newArr: any[] = new Array();
@@ -110,6 +117,7 @@ export default class UMLDesigner extends Vue {
     } else {
       this.clearAll();
       init();
+      this.clearHistory();
     }
   }
 

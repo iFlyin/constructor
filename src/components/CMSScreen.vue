@@ -74,6 +74,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters, mapMutations } from 'vuex';
+import { snapshot } from '@/mixins';
 import CmsElement from './CMSElement.vue';
 import intersect from 'path-intersection';
 import ScreenResize from './ScreenResize.vue';
@@ -81,6 +82,7 @@ import ScreenResize from './ScreenResize.vue';
 @Component({
     components: {CmsElement, ScreenResize},
     props: { item: { type: Object, required: true } },
+    mixins: [ snapshot ],
     computed: {
         ...mapGetters('CMS', {
             id: 'getID',
@@ -113,6 +115,7 @@ export default class CMSScreen extends Vue {
    public addCMS!: any;
    public addProps!: any;
    public id!: any;
+   public saveSnapshot!: any;
    
    private get X(): number { return this.item.params.X; }
    private get Y(): number { return this.item.params.Y; }
@@ -241,6 +244,7 @@ export default class CMSScreen extends Vue {
       function clean(this: any, e: MouseEvent) {
          this.removeEventListener('mousemove', onResize);
          this.removeEventListener('mouseup', clean);
+         that.saveSnapshot();
       }
 
       window.addEventListener('mousemove', onResize);
@@ -269,6 +273,7 @@ export default class CMSScreen extends Vue {
       function clean(this: any, e: MouseEvent): void {
          this.removeEventListener('mousemove', move);
          this.removeEventListener('mouseup', clean);
+         that.saveSnapshot();
       }
 
       window.addEventListener('mousemove', move);
@@ -304,9 +309,13 @@ export default class CMSScreen extends Vue {
       item.props.parent_id = (id === -1) ? null : id;
       // console.log(this.addProps)
       for (const key in this.addProps) { item.props[key] = this.addProps[key];}
-      this.addCMS(item);
+      this.addCMS({
+         item: item,
+         callback: this.saveSnapshot,
+      });
       const focusEl: any = this.$el;
       focusEl.focus();
+      // this.saveSnapshot();
    }
 
    private rectConstructor(x: number, y: number, w: number, h: number): string {
@@ -317,17 +326,17 @@ export default class CMSScreen extends Vue {
       return `M${x1},${y1}L${x2},${y2}`
    }
 
-   private mounted() {
-      const that = this;
-      this.el = this.$el.firstChild;
-      this.el.addEventListener('wheel', function(this: any, e: any) {
-        if(this.offsetHeight < that.minHeight) {
-         //   добавить функцию задающию размер!!!
-            // that.item.params.height = that.minHeight;
-            console.log('бум!');
-        };
-      })
-   }
+   // private mounted() {
+   //    const that = this;
+   //    this.el = this.$el.firstChild;
+   //    this.el.addEventListener('wheel', function(this: any, e: any) {
+   //      if(this.offsetHeight < that.minHeight) {
+   //       //   добавить функцию задающию размер!!!
+   //          // that.item.params.height = that.minHeight;
+   //          console.log('бум!');
+   //      };
+   //    })
+   // }
 }
 </script>
 

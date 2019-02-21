@@ -9,13 +9,15 @@
          id: cms.props.id,
          key: label,
          v: $event,
+         callback: saveSnapshot
       })"/>
    </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { mapGetters, mapMutations }from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
+import { snapshot } from '@/mixins';
 import ElReadonly from './ReadOnly.vue';
 import ElInput from './Input.vue';
 import ElInputNumber from './InputNumber.vue';
@@ -42,7 +44,8 @@ import ElSelect from './ElSelect.vue';
          type: Object,
          required: true,
       }
-   }, 
+   },
+   mixins: [ snapshot ],
    computed: {...mapGetters('CMS', { lookName: 'getLookName', effectName: 'getEffectName'})},
    methods: {...mapMutations('CMS',{ setValue: 'setValue'})},
 })
@@ -51,6 +54,8 @@ export default class InputView extends Vue {
    private cms!: any; 
    private lookName!: any;
    private effectName!: any;
+
+   private saveSnapshot!: any;
 
    private get value(): any {
       if (this.cms.props) {

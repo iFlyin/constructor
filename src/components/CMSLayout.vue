@@ -28,8 +28,10 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { mapMutations, mapGetters } from 'vuex';
 import CmsScreen from '@/components/CMSScreen.vue';
+import { snapshot } from '@/mixins';
 
 @Component({
+    mixins: [ snapshot ],
     components: { CmsScreen },
     props: { left: { type: Number, required: true } },
     computed: {
@@ -68,6 +70,7 @@ export default class LayoutBL extends Vue {
     private selected!: number;
     private selectedType!: string;
     private zoom!: number;
+    private saveSnapshot!: any;
   
     private changeId!: any;
     private deleteScreen!: any;
@@ -106,6 +109,7 @@ export default class LayoutBL extends Vue {
                 console.log('ошибка');
             }
         }
+        this.saveSnapshot();
         this.select({
             id: 0,
             type: 'none',

@@ -1,5 +1,6 @@
 import http from './axios';
 import intersect from 'path-intersection';
+import { clear } from '@/mixins';
 // import { weblook, webeffect } from './localhost';
 
 export default {
@@ -191,9 +192,9 @@ export default {
          // const offsetX = (mouseX / realWidth) * 100;
          // const offsetY = (mouseY / realHeight) * 100;
 
-         if (event.deltaY > 0) { 
+         if (event.deltaY > 0) {
             if (clearZoom === 3) {
-               state.zoom = 0.3
+               state.zoom = 0.3;
             } else {
                state.zoom -= 0.1;
             }
@@ -222,7 +223,8 @@ export default {
          state.screenList.push(payload);
       },
       add2cmsList(state: any, payload: any): void {
-          state.cmsList.push(payload);
+         state.cmsList.push(payload.item);
+         payload.callback();
       },
       delFromScreenList(state: any, payload: any): void {
          state.screenList.splice(payload, 1);
@@ -256,11 +258,9 @@ export default {
          const CMSpath = state.cmsList[CMSindex];
          CMSpath.props.effect = payload.v;
          const parentID = CMSpath.props.parent_id;
-         const fixParentID = (parentID) ? parentID : -1; 
+         const fixParentID = (parentID) ? parentID : -1;
          const parentIndex = state.screenList.findIndex((el: any) => el.props.id === fixParentID);
          const parentPath = state.screenList[parentIndex];
-         console.log('name: ' + CMSpath.props.name + ' p_id: ' + parentID);
-         
          const parent = {
             X: parentPath.params.X,
             Y: parentPath.params.Y,
@@ -278,14 +278,13 @@ export default {
          const CMScenter = {
             X: CMS.X + (CMS.W /2),
             Y: CMS.Y + (CMS.H /2),
-         }
+         };
          
          const path1 = rectConstructor(parent.X, parent.Y, parent.W, parent.H);
          const path2 = lineConstructor(CMScenter.X, CMScenter.Y, CMScenter.X, CMScenter.Y + 10000);
 
          let X = ((CMScenter.X - 200) > 0) ? (CMScenter.X - 200) : 0;
          let Y = intersect(path1, path2)[0].y + 100;
-         
          const effect = CMSpath.props.effect;
          const check = state.effect2screen.hasOwnProperty(effect);
          // добавить луки и add params!!!
@@ -306,14 +305,16 @@ export default {
                },
                params: {
                   type: 'Screen',
-                  X: X,
-                  Y: Y,
+                  X,
+                  Y,
                   width: 400,
                   height: 320,
                },
             }
             state.screenList.push(newScreen);
          }
+
+         payload.callback();
 
          function rectConstructor(x: number, y: number, w: number, h: number): string {
             return `M${x},${y}L${x + w},${y}L${x + w},${y + h}L${x},${y + h}Z`;
@@ -350,6 +351,7 @@ export default {
          const index = state.cmsList.findIndex((cms: any) => cms.props.id == payload.id);
          const cms = state.cmsList[index];
          cms.props[key] = value;
+         payload.callback();
       },
       initNewProject(state: any) {
          state.init = true;
@@ -431,8 +433,8 @@ export default {
                   return console.log("ошибка ID не могут быть равными")
                }
             })
-            const length = sortById.length
-            const lastID = sortById[length-1].id;
+            const length = sortById.length;
+            const lastID = sortById[length - 1].id;
             context.commit('setID', lastID);
          } catch (err) {
             console.log(err);
@@ -440,9 +442,10 @@ export default {
       },
       asyncGetCMSbyId: async (context: any, payload: any) => {
          try {
+            const id = payload.id;
             context.commit('clearAll');
-            const resp: any = await http.get(`/get/get_cms?systems_id=${payload}`);
-            context.commit('setSystemId', payload);
+            const resp: any = await http.get(`/get/get_cms?systems_id=${id}`);
+            context.commit('setSystemId', id);
             context.commit('initNewProject');
             context.commit('panelResize', {dir: 'left', val: 240});
             context.commit('panelResize', {dir: 'right', val: 240});
@@ -452,8 +455,10 @@ export default {
                context.commit('setCMSeffect', {
                   v: obj.props.effect,
                   id: obj.props.id,
-               })
+               });
             }
+            payload.callback();
+            // clear();
             // console.log(data);
          } catch (err) {
             console.log(err);

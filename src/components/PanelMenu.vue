@@ -23,18 +23,14 @@
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Правка" @mouseover="active='settings'">
             <ul class="menu-list" v-show="menuActive && (active==='settings')">
-               <li class="menu-list-item">Отменить</li>
-               <li class="menu-list-item">Повторить</li>
+               <li class="menu-list-item" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">Отменить</li>
+               <li class="menu-list-item" :style="{ cursor: canRedo ? 'pointer' : 'not-allowed' }" @click="redo()">Повторить</li>
             </ul>
          </div>
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Вид" @mouseover="active='view'">
             <!-- <ul class="menu-list" v-show="menuActive">
                <li class="menu-list-item">Новый проект</li>
-               <li class="menu-list-item">Загрузить проект</li>
-               <li class="menu-list-item">Сохранить в файл</li>
-               <li class="menu-list-item">Загрузить из файла</li>
-               <li class="menu-list-item">Выход</li>
             </ul> -->
          </div>
       </nav>
@@ -45,13 +41,15 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-@Component({computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})}})
+import { history } from '@/mixins';
+@Component({mixins: [history], computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})}})
 export default class MainMenu extends Vue { 
    public menuActive: boolean = false;
    public active: string = '';
 
-   public newproject(): void {
 
+   public get newproject(): any {
+      return console.log(this);
    }
 }
 </script>
