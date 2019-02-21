@@ -4,7 +4,7 @@
          class="layout-item"
          :style="{
             'z-index': (childSelected) 
-                ? '1000000' : (item.props.id == selected)
+                ? '1000000' : isSelected 
                     ? '1111' : '',
             left: item.params.X + 'px',
             top: item.params.Y + 'px',
@@ -19,7 +19,9 @@
          <div class="layout-item-wrapper">
             <screen-resize v-if="isSelected" :zoom="zoom" @resize="resize($event)"/>
             <div class="layout-item-content">
-               <div class="layout-item-header" @drop.stop @mousedown.stop="movement($event)">
+               <div class="layout-item-header" @drop.stop @mousedown.stop="movement($event)" :style="{
+                  background: isSelected ? '#009688' : '#2c3e50'
+               }">
                   <!-- вынести в getter!!! -->
                   {{ (item.props.id &lt; 0) ? -(item.props.id) : '' }} {{item.props.name || 'Пустой экран'}}
                </div>   
@@ -56,14 +58,14 @@
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
               <polygon 
                   :points="`0 0, ${10 * zoom} 3.5, 0 7`"
-                  fill="#2c3e50"
+                  fill="#009688"
               />
             </marker>
          </defs>
          <path
             v-for="(line, index) of lines" :key="index"
             :d="line"
-            :stroke="(item.props.id == selected) ? 'red' : '#2c3e50'"
+            :stroke="isSelected ? '#009688' : '#2c3e50'"
             :stroke-width="1.2 / zoom"
             marker-end="url(#arrowhead)"
          />
@@ -369,7 +371,7 @@ export default class CMSScreen extends Vue {
          padding: 10px;
          width: 100%;
          box-sizing: border-box;
-         border-bottom: 1px solid #2c3e50;
+         // border-bottom: 1px solid #2c3e50;
          display: flex;
          justify-content: center;
          align-items: center;

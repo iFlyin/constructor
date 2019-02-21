@@ -14,18 +14,24 @@
                         v-for="system of systemsList"
                         :key="system.uuid"
                         class="menu-side-list-item" 
-                        @click="$emit('initByID', system.uuid), menuActive = !menuActive"                        
+                        @click="$emit('initByID', system.uuid)"                        
                      >{{system.name}}</li>
                   </ul>
                </li>
                <li class="menu-list-item" >
-                  <a class="menu-list-item-link" @click="save($event.target)">Сохранить</a>
+                  <a class="menu-list-item-link" @click="upload()">Сохранить</a>
                </li>
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" @click="save()">Сохранить в файл</a>
+                  <a class="menu-list-item-link" @click="save($event.target)">Сохранить в файл</a>
                </li>
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" @click="save()">Загрузить из файла</a>
+                  <label for ="inputfile" class="menu-list-item-link" @click.stop>
+                     Загрузить из файла
+                  </label>
+                  <input type="file" class="inputfile" id="inputfile" @change="load({
+                     file: $event,
+                     callback: clearHistory,
+                  })">
                </li>
                <li class="menu-list-item" >
                   <a class="menu-list-item-link" @click="$router.push({ path: '/' })">Выход</a>
@@ -61,11 +67,12 @@ import { history } from '@/mixins';
 @Component({ 
    mixins: [history], 
    computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})},
-   methods: {...mapMutations('CMS', {save: 'saveToFile'})}
+   methods: {...mapMutations('CMS', {save: 'saveToFile', load: 'loadFromFile', upload: 'saveToService'})}
 })
 export default class MainMenu extends Vue { 
    public menuActive: boolean = false;
    public active: string = '';
+   private clearHistory!: any;
 
 
    public get newproject(): any {
@@ -226,6 +233,10 @@ export default class MainMenu extends Vue {
             transform: rotate(-45deg);
          }
       }
+   }
+
+   .inputfile {
+      display: none;
    }
 
    

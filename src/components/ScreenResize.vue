@@ -141,7 +141,7 @@ export default class SelectResize extends Vue { private zoom!: number; }
    .layout-item-resizer {
       height: 100%;
       width: 100%;
-      outline: 2px solid red;
+      outline: 2px solid #009688;
       position: absolute;
       top: 0;
       left: 0;

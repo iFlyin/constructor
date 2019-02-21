@@ -1,6 +1,5 @@
 import http from './axios';
 import intersect from 'path-intersection';
-import { clear } from '@/mixins';
 // import { weblook, webeffect } from './localhost';
 
 export default {
@@ -10,7 +9,7 @@ export default {
       panel: {
          left: 0,
          right: 0,
-         footer: 0,
+         // footer: 0,
       },
       systems_list: [
          {
@@ -411,6 +410,22 @@ export default {
          el.setAttribute('href', window.URL.createObjectURL(blob));
          el.setAttribute('download', filename);
          el.dataset.downloadurl = ['application/json', filename, window.URL.createObjectURL(blob)].join(':');
+      },
+      loadFromFile(state: any, payload: any) {
+         const file = payload.file.target.files[0];
+         const reader = new FileReader();
+         reader.onload = (e: any) => {
+            const json = JSON.parse(e.target.result);
+            state.cmsList = json.cms;
+            state.screenList = json.screen;
+            payload.callback();
+         };
+         reader.readAsText(file);
+      },
+      saveToService(state: any, payload: any) {
+         for (const CMS of state.cmsList) {
+            const obj = JSON.stringify(CMS.props);
+         }
       },
    },
    actions: {

@@ -168,7 +168,7 @@ export default class CMSElement extends Vue {
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
 
     &-active {
-        border-color: red !important;
+        border-color: #e1364c !important;
     }
 
     &-header {
