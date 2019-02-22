@@ -422,9 +422,10 @@ export default {
          };
          reader.readAsText(file);
       },
-      saveToService(state: any, payload: any) {
+      saveToService(state: any) {
          for (const CMS of state.cmsList) {
             const obj = JSON.stringify(CMS.props);
+            console.log(obj);
          }
       },
    },

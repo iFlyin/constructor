@@ -39,8 +39,8 @@
             </ul>
          </div>
          <div class="menu-container">
-            <input type="button" class="menu-text-button" value="Правка" @mouseover="active='settings'">
-            <ul class="menu-list" v-show="menuActive && (active==='settings')">
+            <input type="button" class="menu-text-button" value="Правка" @mouseover="active='edit'">
+            <ul class="menu-list" v-show="menuActive && (active==='edit')">
                <li class="menu-list-item">
                   <a class="menu-list-item-link" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">Отменить</a>
                </li>
@@ -51,9 +51,17 @@
          </div>
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Вид" @mouseover="active='view'">
-            <!-- <ul class="menu-list" v-show="menuActive">
-               <li class="menu-list-item">Новый проект</li>
-            </ul> -->
+            <ul class="menu-list" v-show="menuActive && (active==='view')">
+               <a class="menu-list-item-link">
+                  Левая панель
+               </a>
+               <a class="menu-list-item-link">
+                  Правая панель
+               </a>
+               <a class="menu-list-item-link">
+                  Нижняя панель
+               </a>
+            </ul>
          </div>
       </nav>
       <router-link to="/" class="menu-close-button"/>
@@ -66,7 +74,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import { history } from '@/mixins';
 @Component({ 
    mixins: [history], 
-   computed: {...mapGetters('CMS', {systemsList: 'getSystemsList'})},
+   computed: {...mapGetters('CMS', {systemsList: 'getSystemsList', panels: 'getPanel'})},
    methods: {...mapMutations('CMS', {save: 'saveToFile', load: 'loadFromFile', upload: 'saveToService'})}
 })
 export default class MainMenu extends Vue { 
