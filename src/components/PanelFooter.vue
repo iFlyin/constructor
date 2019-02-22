@@ -18,10 +18,10 @@
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
-import cmsForm from './CMSform.vue';
+// import cmsForm from './CMSform.vue';
 
 @Component({
-   components: { cmsForm },
+   components: {},
    props: {
       height: {
          type: Number,

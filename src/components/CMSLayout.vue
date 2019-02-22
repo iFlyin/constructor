@@ -1,14 +1,12 @@
 <template>
     <div
         class="layout"
-        tabindex="0"
         :style="{ zoom: zoom }"
         @drop.stop="drop($event)"
         @click.prevent="select({
             id: 0,
             type: 'none',
         })"
-        @keyup.delete="del()"
         @mousewheel.stop.prevent="wheel($event)"
     >
         <cms-screen 
@@ -71,6 +69,8 @@ export default class LayoutBL extends Vue {
     private selectedType!: string;
     private zoom!: number;
     private saveSnapshot!: any;
+    // private undo!: any;
+    // private redo!: any;
   
     private changeId!: any;
     private deleteScreen!: any;
@@ -122,6 +122,11 @@ export default class LayoutBL extends Vue {
             e: e,
         });
     }
+
+    private keyUpListner(e: KeyboardEvent): void {if(e.code === 'Delete'){this.del()} }
+
+    private mounted(): void { document.addEventListener('keyup', this.keyUpListner) }
+    private beforeDestroy(): void { document.removeEventListener('keyup', this.keyUpListner) }
 }
 </script>
 

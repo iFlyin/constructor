@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { Vue, Component} from 'vue-property-decorator';
-import cmsForm from './CMSform.vue';
+import cmsForm from './CMSForm.vue';
 // import { mapGetters } from 'vuex';
 
 @Component({

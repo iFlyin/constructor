@@ -33,8 +33,8 @@ import MainMenu from '@/components/PanelMenu.vue';
 import PanelLeft from '@/components/PanelLeft.vue';
 import PanelRight from '@/components/PanelRight.vue';
 import PanelFooter from '@/components/PanelFooter.vue';
-import AppCanvas from '@/components/Canvas.vue';
-import Accordion from '@/components/Accordion.vue';
+import AppCanvas from '@/components/PanelCanvas.vue';
+import Accordion from '@/components/PanelAccordion.vue';
 import LayoutBL from '@/components/CMSLayout.vue';
 
 @Component ({

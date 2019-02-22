@@ -400,6 +400,7 @@ export default {
          // console.log(state.cmsList)
       },
       saveToFile(state: any, payload: any) {
+         console.log(payload);
          const json = {
             cms: state.cmsList,
             screen: state.screenList,

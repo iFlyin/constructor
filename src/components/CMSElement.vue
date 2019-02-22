@@ -186,6 +186,7 @@ export default class CMSElement extends Vue {
     &-content {
         display: flex;
         flex-flow: column nowrap;
+        user-select: none;
     }
 
     &-row {

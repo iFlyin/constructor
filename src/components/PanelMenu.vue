@@ -8,7 +8,9 @@
                   <a class="menu-list-item-link" @click="$emit('newproject')">Новый проект</a>
                </li>
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" @click.stop>Загрузить проект</a>
+                  <a class="menu-list-item-link" @click.stop>
+                     Загрузить проект
+                  </a>
                   <ul class="menu-side-list">
                      <li 
                         v-for="system of systemsList"
@@ -19,10 +21,14 @@
                   </ul>
                </li>
                <li class="menu-list-item" >
-                  <a class="menu-list-item-link" @click="upload()">Сохранить</a>
+                  <a class="menu-list-item-link" @click="upload()">
+                     Сохранить
+                  </a>
                </li>
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" @click="save($event.target)">Сохранить в файл</a>
+                  <a class="menu-list-item-link" id="save-to-file" @click="save($event.target)">
+                     Сохранить в файл
+                  </a>
                </li>
                <li class="menu-list-item">
                   <label for ="inputfile" class="menu-list-item-link" @click.stop>
@@ -42,24 +48,25 @@
             <input type="button" class="menu-text-button" value="Правка" @mouseover="active='edit'">
             <ul class="menu-list" v-show="menuActive && (active==='edit')">
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">Отменить</a>
+                  <a class="menu-list-item-link" :style="{ cursor: canUndo ? 'pointer' : 'not-allowed' }" @click="undo()">
+                     <span>Отменить</span><font-awesome-icon icon="undo-alt"/>
+                  </a>
                </li>
                <li class="menu-list-item">
-                  <a class="menu-list-item-link" :style="{ cursor: canRedo ? 'pointer' : 'not-allowed' }" @click="redo()">Повторить</a>
+                  <a class="menu-list-item-link" :style="{ cursor: canRedo ? 'pointer' : 'not-allowed' }" @click="redo()">
+                     <span>Повторить</span><font-awesome-icon icon="redo-alt"/>
+                  </a>
                </li>
             </ul>
          </div>
          <div class="menu-container">
             <input type="button" class="menu-text-button" value="Вид" @mouseover="active='view'">
             <ul class="menu-list" v-show="menuActive && (active==='view')">
-               <a class="menu-list-item-link">
-                  Левая панель
+               <a class="menu-list-item-link" @click="panelToogle('left')">
+                  <span>Левая панель</span><font-awesome-icon :icon="left?'eye':'eye-slash'"/>
                </a>
-               <a class="menu-list-item-link">
-                  Правая панель
-               </a>
-               <a class="menu-list-item-link">
-                  Нижняя панель
+               <a class="menu-list-item-link" @click="panelToogle('right')">
+                  <span>Правая панель</span><font-awesome-icon :icon="right?'eye':'eye-slash'"/>
                </a>
             </ul>
          </div>
@@ -75,18 +82,67 @@ import { history } from '@/mixins';
 @Component({ 
    mixins: [history], 
    computed: {...mapGetters('CMS', {systemsList: 'getSystemsList', panels: 'getPanel'})},
-   methods: {...mapMutations('CMS', {save: 'saveToFile', load: 'loadFromFile', upload: 'saveToService'})}
+   methods: {...mapMutations('CMS', {save: 'saveToFile', load: 'loadFromFile', upload: 'saveToService', panelResize: 'panelResize'})}
 })
 export default class MainMenu extends Vue { 
    public menuActive: boolean = false;
    public active: string = '';
-   private clearHistory!: any;
+   public clearHistory!: any;
+   public panels!: any;
+   public panelResize!: any;
+   public undo!: any;
+   public redo!: any;
+   public upload!: any;
+   public save!: any;
 
+   public get left(): boolean {
+      return this.panels.left > 2 
+         ? true
+         : false;
+   }
+   
+   public get right(): boolean {
+      return this.panels.right > 2 
+         ? true
+         : false;
+   }
 
-   public get newproject(): any {
-      return console.log(this);
+   public panelToogle(this: any, dir: string) {
+      this.panelResize({
+         dir: dir,
+         val: this[dir] ? 2 : 240,
+      })
+   }
+
+   private keyUpListner(e: KeyboardEvent): void {
+      // console.log(e);
+      if(e.code === 'KeyZ' && e.ctrlKey === true) {this.undo()}
+      if(e.code === 'KeyY' && e.ctrlKey === true) {this.redo()}
+      if(e.code === 'KeyB' && e.ctrlKey === true) {this.panelToogle('left')}
+      if(e.code === 'KeyI' && e.ctrlKey === true) {this.panelToogle('right')}
+      if(e.code === 'KeyS' && e.ctrlKey === true && e.shiftKey === true) {
+         const el: any = document.getElementById('save-to-file');
+         el.click();
+      }
+      if(e.code === 'KeyS' && e.ctrlKey === true && e.shiftKey !== true) {this.upload()}
+      
+   }
+
+   private fixPrevent(e: KeyboardEvent) {
+      if(e.code === 'KeyS' && e.ctrlKey === true) {e.preventDefault()}
+   }
+
+   private mounted(): void {
+      document.addEventListener('keyup', this.keyUpListner);
+      document.addEventListener('keydown', this.fixPrevent, false);
+   }
+
+   private beforeDestroy(): void { 
+      document.removeEventListener('keyup', this.keyUpListner);
+      document.removeEventListener('keydown', this.fixPrevent, false);
    }
 }
+
 </script>
 
 
@@ -129,10 +185,6 @@ export default class MainMenu extends Vue {
          font-size: 12px;
          box-shadow: 2px 2px 8px rgba(0, 0, 0, .33);
 
-         & a {
-            
-         }
-
          &-item {
             position: relative;
             
@@ -145,13 +197,12 @@ export default class MainMenu extends Vue {
 
             &-link {
                box-sizing: border-box;
-               // background-color: red !important;
                width: 100%;
                height: 100%;
                padding: 10px 25px;
                display: flex;
                flex-flow: row nowrap;
-               justify-content: flex-start;
+               justify-content: space-between;
                white-space: nowrap;
                user-select: none;
                cursor: pointer;

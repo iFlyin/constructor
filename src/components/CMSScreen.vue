@@ -79,7 +79,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import { snapshot } from '@/mixins';
 import CmsElement from './CMSElement.vue';
 import intersect from 'path-intersection';
-import ScreenResize from './ScreenResize.vue';
+import ScreenResize from './CMSResize.vue';
 
 @Component({
     components: {CmsElement, ScreenResize},

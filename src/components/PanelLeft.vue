@@ -34,8 +34,8 @@ export default class LeftAsidePanel extends Vue {
 
       function move(e: MouseEvent): void {
          const X: number = e.clientX;
-         if (X < 1) {
-            emitWidth = 1;
+         if (X < 2) {
+            emitWidth = 2;
             that.$emit('resize', emitWidth);
          } else if (X > maxWidth) {
             emitWidth = maxWidth;

@@ -23,7 +23,7 @@ import AppInput from './libs/_InputView.vue';
       cmsList: 'getCMSlist',
    })}
 })
-export default class CMSform extends Vue {
+export default class CMSForm extends Vue {
    private paramsList!: any;
    private checkSelected!: string;
    private selected!: number;
